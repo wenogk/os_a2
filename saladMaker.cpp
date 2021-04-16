@@ -8,27 +8,6 @@
 #include <unistd.h>
 #include "kitchen.h"
 
-SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
-{
-    SaladMaker *me = new SaladMaker();
-    if (saladMakerNumber == 0)
-    {
-        me->vegetableInfiniteSupply = Tomato;
-        me->vegetablesNeeded = GreenPepper_Onions;
-    }
-    else if (saladMakerNumber == 1)
-    {
-        me->vegetableInfiniteSupply = GreenPepper;
-        me->vegetablesNeeded = Tomato_Onions;
-    }
-    else if (saladMakerNumber == 2)
-    {
-        me->vegetableInfiniteSupply = Onions;
-        me->vegetablesNeeded = Tomato_GreenPepper;
-    }
-    return me;
-}
-
 int main(int argc, char *argv[])
 {
     int opt;
@@ -76,14 +55,31 @@ int main(int argc, char *argv[])
     {
         printf("\t I have unlimited tomatoes \n");
     }
+
     if (me->vegetableInfiniteSupply == GreenPepper)
     {
         printf("\t I have unlimited green pepper \n");
     }
+
     if (me->vegetableInfiniteSupply == Onions)
     {
         printf("\t I have unlimited onions \n");
     }
+
+    //while true
+    //---start timer for waiting timer
+    //---P(me->vegetablesNeeded)
+    // open up shared memz
+    //---end timer for waiting timer. add time waited to shared total waiting time for specific salad maker
+    //---start timer for time making salad
+
+    //---sleep based on random time
+
+    //---end timer for time making. add time waited to shared total making time for specific salad maker
+    //---add 1 to shared total number of salads made
+    //---add 1 to shared total numbber of salads made for specific salad maker
+    //close shared memz
+    //---V(me->vegetablesNeeded)
 
     delete me;
     return 0;
