@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     {
         printf("shmid %d\n", shmid);
     }
-    kitchenData->cnt = 2058;
+    kitchenData->totalSaladsNeeded = atoi(n_opt);
     // chef
     printf("I am a chef\n");
     printf("\t tomatoWeight: %d", tomatoWeight);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         pids[i] = fork();
         if (pids[i] == 0)
         {
-            char *sorterData[3] = {"./saladMaker", "saladMaker", (char *)NULL};
+            char *sorterData[6] = {"./saladMaker", "-m", "5", "-s", "43342", (char *)NULL};
             if (execv(sorterData[0], sorterData) == -1)
             {
                 perror("Error creating salad maker process");
