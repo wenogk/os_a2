@@ -7,7 +7,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 
-int main()
+int main(int argc, char *argv[])
 {
 
     printf("I am a saladmaker\n");
