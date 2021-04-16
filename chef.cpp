@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     kitchenData->totalSaladsServed = 0;
     // chef
     printf("I am a chef\n");
-    printf("\t tomatoWeight: %d", tomatoWeight);
+    printf("\t tomatoWeight: %d\n", tomatoWeight);
 
     // 3 SaladMakers, therefore create 3 salad maker processes
     pid_t pids[3];
@@ -98,6 +98,16 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+    // while (the total number of salads needed - salads served) is > 0
+    //----randomly select 1 pair of veggies
+    //----randomly set weights for the two veggie variables
+
+    //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
+
+    //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
+
+    //kill all saladMakers :D
 
     for (int i = 0; i < 3; i++)
     {
