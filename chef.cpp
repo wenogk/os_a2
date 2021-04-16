@@ -105,8 +105,23 @@ int main(int argc, char *argv[])
     }
     printf("Tomato_GreenPepper sem---> %s \n", vegetablePairEnumToString(Tomato_GreenPepper).c_str());
     Tomato_GreenPepper_semaphore = sem_open(vegetablePairEnumToString(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 0);
+    // if (*Tomato_GreenPepper_semaphore < 0)
+    // {
+    //     perror("Tomato_GreenPepper_semaphore opening error");
+    //     return 1;
+    // }
     Tomato_Onions_semaphore = sem_open(vegetablePairEnumToString(Tomato_Onions).c_str(), O_CREAT, 0666, 0);
+    // if (*Tomato_Onions_semaphore < 0)
+    // {
+    //     perror("Tomato_Onions_semaphore");
+    //     return 1;
+    // }
     GreenPepper_Onions_semaphore = sem_open(vegetablePairEnumToString(GreenPepper_Onions).c_str(), O_CREAT, 0666, 0);
+    // if (*GreenPepper_Onions_semaphore < 0)
+    // {
+    //     perror("GreenPepper_Onions_semaphore");
+    //     return 1;
+    // }
 
     // while (the total number of salads needed - salads served) is > 0
     //----randomly select 1 pair of veggies
@@ -115,17 +130,25 @@ int main(int argc, char *argv[])
     //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
 
     //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
-    sem_wait(Tomato_GreenPepper_semaphore);
+    if (sem_wait(Tomato_GreenPepper_semaphore) < 0)
+    {
+        perror("sem wait");
+        return 1;
+    }
 
-    sem_post(Tomato_GreenPepper_semaphore);
+    if (sem_post(Tomato_GreenPepper_semaphore) < 0)
+    {
+        perror("sem post");
+        return 1;
+    }
 
-    sem_wait(Tomato_Onions_semaphore);
+    // sem_wait(Tomato_Onions_semaphore);
 
-    sem_post(Tomato_Onions_semaphore);
+    // sem_post(Tomato_Onions_semaphore);
 
-    sem_wait(GreenPepper_Onions_semaphore);
+    // sem_wait(GreenPepper_Onions_semaphore);
 
-    sem_post(GreenPepper_Onions_semaphore);
+    // sem_post(GreenPepper_Onions_semaphore);
 
     //kill all saladMakers :D
 

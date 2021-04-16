@@ -53,8 +53,12 @@ int main(int argc, char *argv[])
 
     printf("saladMaker mutex---> %s \n", vegetablePairEnumToString(me->vegetablesNeeded).c_str());
     mutex = sem_open(vegetablePairEnumToString(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0);
-
-    sem_wait(mutex);
+    printf("Salad maker before\n");
+    if (sem_wait(mutex) < 0)
+    {
+        perror("mutex probblem");
+        return 1;
+    }
     sleep(3);
     printf("I am a saladmaker\n");
     if (me->vegetableInfiniteSupply == Tomato)
