@@ -22,6 +22,12 @@ struct ChefTable
     float currentPickedOnionWeight;
 };
 
+struct SaladMaker
+{
+    Vegetable vegetableInfiniteSupply;
+    VegetablePair vegetablesNeeded;
+};
+
 struct SaladMaker1
 {
     Vegetable vegetableInfiniteSupply = Tomato;
