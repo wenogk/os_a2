@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[])
 {
+    sem_t *mutex;
     int opt;
     bool flagS = false; // identifier that the shared memory segments has
     bool flagM = false; //salad making time
@@ -50,6 +51,11 @@ int main(int argc, char *argv[])
     int saladMakerNumber = atoi(n_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
+    printf("saladMaker mutex---> %s \n", vegetablePairEnumToString(me->vegetablesNeeded).c_str());
+    mutex = sem_open(vegetablePairEnumToString(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0);
+
+    sem_wait(mutex);
+    sleep(3);
     printf("I am a saladmaker\n");
     if (me->vegetableInfiniteSupply == Tomato)
     {
@@ -66,6 +72,8 @@ int main(int argc, char *argv[])
         printf("\t I have unlimited onions \n");
     }
 
+    sem_post(mutex);
+    sem_close(mutex);
     //while true
     //---start timer for waiting timer
     //---P(me->vegetablesNeeded)

@@ -1,3 +1,6 @@
+#include <iostream>
+
+using namespace std;
 enum Vegetable
 {
     Tomato,
@@ -20,9 +23,6 @@ struct ChefTable
     float currentPickedTomatoWeight;
     float currentPickedGreenPepperWeight;
     float currentPickedOnionWeight;
-    int Tomato_GreenPepper_semaphore;
-    int Tomato_Onions_semaphore;
-    int GreenPepper_Onions_semaphore;
     int NumberOfSaladsMadeBySaladMaker0;
     int NumberOfSaladsMadeBySaladMaker1;
     int NumberOfSaladsMadeBySaladMaker2;
@@ -80,4 +80,19 @@ SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
         me->vegetablesNeeded = Tomato_GreenPepper;
     }
     return me;
+}
+
+string vegetablePairEnumToString(VegetablePair type)
+{
+    switch (type)
+    {
+    case Tomato_GreenPepper:
+        return "Tomato_GreenPepper";
+    case Tomato_Onions:
+        return "Tomato_Onions";
+    case GreenPepper_Onions:
+        return "GreenPepper_Onions";
+    default:
+        return "Invalid animal";
+    }
 }
