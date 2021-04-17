@@ -8,6 +8,11 @@
 #include <unistd.h>
 #include "kitchen.h"
 
+//f
+#include <fcntl.h>    /* For O_* constants */
+#include <sys/stat.h> /* For mode constants */
+#include <semaphore.h>
+
 int main(int argc, char *argv[])
 {
     sem_t *mutex;
@@ -51,8 +56,11 @@ int main(int argc, char *argv[])
     int saladMakerNumber = atoi(n_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
-    printf("saladMaker mutex---> %s \n", vegetablePairEnumToString(me->vegetablesNeeded).c_str());
-    mutex = sem_open(vegetablePairEnumToString(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0);
+    printf("saladMaker mutex---> %s \n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
+    mutex = sem_open(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 1);
+    int value;
+    sem_getvalue(mutex, &value);
+    printf("%s value is %d\n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), value);
     printf("Salad maker before\n");
     if (sem_wait(mutex) < 0)
     {
