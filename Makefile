@@ -1,11 +1,11 @@
 CC=g++
 all: chef saladMaker
 
-main: chef.cpp
-	$(CC) -w chef.cpp -o chef
+chef: chef.cpp
+	$(CC) chef.cpp -o chef -lpthread
 
 saladMaker: saladMaker.cpp
-	$(CC) -w saladMaker.cpp -o saladMaker
+	$(CC) saladMaker.cpp -o saladMaker -lpthread
 
 clean:
 	rm *.o chef saladMaker

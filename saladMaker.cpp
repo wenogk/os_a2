@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
     printf("saladMaker mutex---> %s \n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
-    mutex = sem_open(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 1);
+    mutex = sem_open(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0);
+    sem_unlink(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
     int value;
     sem_getvalue(mutex, &value);
     printf("%s value is %d\n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), value);

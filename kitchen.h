@@ -82,16 +82,16 @@ SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
     return me;
 }
 
-string vegetablePairEnumToString(VegetablePair type)
+string vegetablePairEnumToSemaphoreName(VegetablePair type)
 {
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "Tomato_GreenPepper";
+        return "/TomatoGreenPepperPair";
     case Tomato_Onions:
-        return "Tomato_Onions";
+        return "/TomatoOnionsPair";
     case GreenPepper_Onions:
-        return "GreenPepper_Onions";
+        return "/GreenPepperOnionsPair";
     default:
         return "Invalid animal";
     }
