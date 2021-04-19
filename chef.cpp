@@ -203,22 +203,13 @@ int main(int argc, char *argv[])
         }
     }
 
-    // if (*GreenPepper_Onions_semaphore < 0)
-    // {
-    //     perror("GreenPepper_Onions_semaphore");
-    //     return 1;
-    // }
-
     // while (the total number of salads needed - salads served) is > 0
     //----randomly select 1 pair of veggies
     //----randomly set weights for the two veggie variables
 
-    //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
-
-    //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
     int totalSaladsNeeded = atoi(n_opt);
     int saladsServed = 0;
-    //
+
     while (saladsServed < totalSaladsNeeded)
     {
         int chosenSaladMakerIndex = randNum(0, 2);
@@ -343,22 +334,6 @@ int main(int argc, char *argv[])
         printf("Serving salad.. \n");
         saladsServed += 1;
     }
-
-    // if (sem_wait(Tomato_GreenPepper_semaphore) < 0)
-    // {
-    //     perror("sem wait");
-    //     return 1;
-    // }
-
-    // sem_wait(Tomato_Onions_semaphore);
-
-    // sem_post(Tomato_Onions_semaphore);
-
-    // sem_wait(GreenPepper_Onions_semaphore);
-
-    // sem_post(GreenPepper_Onions_semaphore);
-
-    //kill all saladMakers :D
 
     for (int i = 0; i < 3; i++)
     {
