@@ -15,7 +15,11 @@
 
 int main(int argc, char *argv[])
 {
+    sem_t *empty;
+    sem_t *full;
     sem_t *mutex;
+    sem_t *done;
+
     int opt;
     bool flagS = false; // identifier that the shared memory segments has
     bool flagM = false; //salad making time
@@ -56,51 +60,81 @@ int main(int argc, char *argv[])
     int saladMakerNumber = atoi(n_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
-    printf("saladMaker mutex---> %s \n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
-    mutex = sem_open(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0);
+    if ((empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((full = sem_open(vegetablePairEnumToSemaphoreName_Full(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((mutex = sem_open(vegetablePairEnumToSemaphoreName_Mutex(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((done = sem_open(vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
     sem_unlink(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
     int value;
     sem_getvalue(mutex, &value);
     printf("%s value is %d\n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), value);
     printf("Salad maker before\n");
+
+    if (sem_post(full) < 0)
+    {
+        perror("mutex probblem");
+        return 1;
+    }
+
+    if (sem_post(mutex) < 0)
+    {
+        perror("mutex probblem");
+        return 1;
+    }
+
+    //critical section
+
+    printf("IN CRITICAL SECTION OF SALAD MAKER!!");
+
+    sleep(3);
+
     if (sem_wait(mutex) < 0)
     {
         perror("mutex probblem");
         return 1;
     }
-    sleep(3);
-    printf("I am a saladmaker\n");
-    if (me->vegetableInfiniteSupply == Tomato)
+
+    if (sem_wait(empty) < 0)
     {
-        printf("\t I have unlimited tomatoes \n");
+        perror("mutex probblem");
+        return 1;
     }
 
-    if (me->vegetableInfiniteSupply == GreenPepper)
+    if (sem_post(done) < 0)
     {
-        printf("\t I have unlimited green pepper \n");
+        perror("mutex probblem");
+        return 1;
     }
 
-    if (me->vegetableInfiniteSupply == Onions)
-    {
-        printf("\t I have unlimited onions \n");
-    }
+    sem_unlink(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Full(me->vegetablesNeeded).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(me->vegetablesNeeded).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
 
-    sem_post(mutex);
+    sem_close(empty);
+    sem_close(full);
     sem_close(mutex);
-    //while true
-    //---start timer for waiting timer
-    //---P(me->vegetablesNeeded)
-    // open up shared memz
-    //---end timer for waiting timer. add time waited to shared total waiting time for specific salad maker
-    //---start timer for time making salad
-
-    //---sleep based on random time
-
-    //---end timer for time making. add time waited to shared total making time for specific salad maker
-    //---add 1 to shared total number of salads made
-    //---add 1 to shared total numbber of salads made for specific salad maker
-    //close shared memz
-    //---V(me->vegetablesNeeded)
+    sem_close(done);
 
     delete me;
     return 0;
