@@ -17,28 +17,20 @@ enum VegetablePair
 
 struct ChefBook
 {
-    int totalSaladsNeeded;
-    int totalSaladsServed;
 
     float currentPickedTomatoWeight;
     float currentPickedGreenPepperWeight;
     float currentPickedOnionWeight;
 
-    int NumberOfSaladsMadeBySaladMaker0;
-    int NumberOfSaladsMadeBySaladMaker1;
-    int NumberOfSaladsMadeBySaladMaker2;
+    int NumberOfTotalSaladsMadeBySaladMaker[3];
 
-    int SaladMaker0StartTime;
-    int SaladMaker1StartTime;
-    int SaladMaker2StartTime;
+    int SaladMakerCurrentStartTime[3];
 
-    int SaladMaker0EndTime;
-    int SaladMaker1EndTime;
-    int SaladMaker2EndTime;
+    int SaladMakerCurrentEndTime[3];
 
-    int SaladMaker0TotalTimeWaiting;
-    int SaladMaker1TotalTimeWaiting;
-    int SaladMaker2TotalTimeWaiting;
+    int SaladMakerTotalTimeWaiting[3];
+
+    bool isSaladMakerDoingWork[3];
 
     float totalPickedGreenPepperWeightForSaladMaker0;
     float totalPickedOnionWeightForSaladMaker0;
@@ -93,6 +85,13 @@ SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
         me->vegetablesNeeded = Tomato_GreenPepper;
     }
     return me;
+}
+
+void logChefBook(ChefBook *chefBook)
+{
+    printf("\tSalad Maker 0 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[0]);
+    printf("\tSalad Maker 1 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[1]);
+    printf("\tSalad Maker 2 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[2]);
 }
 
 string vegetablePairEnumToSemaphoreName(VegetablePair type)

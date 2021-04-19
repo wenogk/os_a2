@@ -100,9 +100,6 @@ int main(int argc, char *argv[])
         printf("shmid %d\n", shmid);
     }
 
-    chefBook->totalSaladsNeeded = atoi(n_opt);
-    chefBook->totalSaladsServed = 0;
-
     if ((Tomato_GreenPepper_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
         perror("sem_open");
@@ -203,7 +200,10 @@ int main(int argc, char *argv[])
     //----randomly select 1 pair of veggies
     //----randomly set weights for the two veggie variables
 
-    while (chefBook->totalSaladsServed < chefBook->totalSaladsNeeded)
+    int totalSaladsNeeded = atoi(n_opt);
+    int totalVeggiePairsGivenToSaladMakers = 0;
+
+    while (totalVeggiePairsGivenToSaladMakers < totalSaladsNeeded)
     {
         int chosenSaladMakerIndex = randNum(0, 2);
         printf("Randomly chose %d\n", chosenSaladMakerIndex);
@@ -221,8 +221,6 @@ int main(int argc, char *argv[])
                 perror("sem wait");
                 return 1;
             }
-
-            printf("Giving ingredients to salad maker! \n");
 
             sleep(2);
 
@@ -325,8 +323,13 @@ int main(int argc, char *argv[])
         }
 
         printf("Serving salad.. \n");
-        chefBook->totalSaladsServed += 1;
+        totalVeggiePairsGivenToSaladMakers += 1;
     }
+
+    while (chefBook->isSaladMakerDoingWork[0] || chefBook->isSaladMakerDoingWork[1] || chefBook->isSaladMakerDoingWork[2])
+        ;
+
+    logChefBook(chefBook);
 
     for (int i = 0; i < 3; i++)
     {

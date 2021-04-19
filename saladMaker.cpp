@@ -13,6 +13,10 @@
 #include <sys/stat.h> /* For mode constants */
 #include <semaphore.h>
 
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
 int main(int argc, char *argv[])
 {
     sem_t *empty;
@@ -58,7 +62,20 @@ int main(int argc, char *argv[])
 
     SaladMaker *me;
     int saladMakerNumber = atoi(n_opt);
+    int shmid = atoi(s_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
+
+    struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment */
+
+    if (chefBook == (void *)-1)
+    {
+        perror("Shared memory attach");
+        return 1;
+    }
+    else
+    {
+        printf("SaladMaker %d shmid %d\n", saladMakerNumber, shmid);
+    }
 
     if ((empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
     {
@@ -101,20 +118,25 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        printf("SALAD MAKERPICKED UP VEGGIES!!\n");
+        printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
+
+        chefBook->isSaladMakerDoingWork[saladMakerNumber] = true;
+
         if (sem_post(done) < 0)
         {
             perror("mutex probblem");
             return 1;
         }
 
-        //critical section
-
-        printf("MAKING SALAD!!\n");
+        printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
 
         sleep(7);
 
-        printf("DONE MAKING SALAD!!\n");
+        chefBook->NumberOfTotalSaladsMadeBySaladMaker[saladMakerNumber] += 1;
+
+        chefBook->isSaladMakerDoingWork[saladMakerNumber] = false;
+
+        printf("SALAD MAKER %d DONE MAKING SALAD!!\n", saladMakerNumber);
 
         if (sem_post(mutex) < 0)
         {
@@ -128,6 +150,7 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
+
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(me->vegetablesNeeded).c_str());
@@ -137,6 +160,14 @@ int main(int argc, char *argv[])
     sem_close(full);
     sem_close(mutex);
     sem_close(done);
+
+    int detatch = shmdt(chefBook); /* Detach segment */
+
+    if (detatch < 0)
+    {
+        perror(" Detachment .\n");
+        return 1;
+    }
 
     delete me;
     return 0;
