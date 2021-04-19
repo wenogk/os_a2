@@ -15,26 +15,39 @@ enum VegetablePair
     GreenPepper_Onions
 };
 
-struct ChefTable
+struct ChefBook
 {
     int totalSaladsNeeded;
     int totalSaladsServed;
-    VegetablePair pickedVegetables;
+
     float currentPickedTomatoWeight;
     float currentPickedGreenPepperWeight;
     float currentPickedOnionWeight;
+
     int NumberOfSaladsMadeBySaladMaker0;
     int NumberOfSaladsMadeBySaladMaker1;
     int NumberOfSaladsMadeBySaladMaker2;
+
     int SaladMaker0StartTime;
     int SaladMaker1StartTime;
     int SaladMaker2StartTime;
+
     int SaladMaker0EndTime;
     int SaladMaker1EndTime;
     int SaladMaker2EndTime;
+
     int SaladMaker0TotalTimeWaiting;
     int SaladMaker1TotalTimeWaiting;
     int SaladMaker2TotalTimeWaiting;
+
+    float totalPickedGreenPepperWeightForSaladMaker0;
+    float totalPickedOnionWeightForSaladMaker0;
+
+    float totalPickedTomatoWeightForSaladMaker1;
+    float totalPickedOnionWeightForSaladMaker1;
+
+    float totalPickedTomatoWeightForSaladMaker2;
+    float totalPickedGreenPepperWeightForSaladMaker2;
 };
 
 struct SaladMaker

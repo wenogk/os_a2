@@ -14,17 +14,11 @@ using namespace std;
 #include <sys/wait.h>
 #include <cstdlib>
 #include <signal.h>
-#include <ctime>>
+#include <ctime>
 
 int tomatoWeight = 80;
 int greenPepperWeight = 50;
 int onionsWeight = 30;
-
-// vegetable code 0 is for tomato
-// vegetable code 1 is for greenPepper
-// vegetable code 2 is for onions
-
-//kitchen data structure for shared memory
 
 int randNum(int min, int max)
 {
@@ -55,6 +49,8 @@ int main(int argc, char *argv[])
 
     char *n_opt = 0;
     char *m_opt = 0;
+
+    //get the arguments for the chef program
     while ((opt = getopt(argc, argv, "n:m:")) != -1)
     { // for each option... n and m
         switch (opt)
@@ -75,41 +71,38 @@ int main(int argc, char *argv[])
 
     if (!flagN || !flagM)
     {
+        //if -n and -m flag values not given, exit and show error msg:
         printf("Argument error. Chef should be invoked as follows: ./chef -n numOfSalads -m cheftime \n");
         return 1;
     }
 
     int shmid, numtimes;
-    struct ChefTable *kitchenData;
+    struct ChefBook *chefBook;
     char *bufptr;
     int spaceavailable;
-    // shmid = shmget(IPC_PRIVATE, sizeof(struct ChefTable), 0644 | IPC_CREAT); //create shared memory segment
-    // if (shmid == -1)
-    // {
-    //     perror("Shared memory");
-    //     return 1;
-    // }
 
-    // kitchenData = (ChefTable *)shmat(shmid, NULL, 0); // Attach to the shared memory segment to get a pointer to it.
+    shmid = shmget(IPC_PRIVATE, sizeof(struct ChefBook), 0644 | IPC_CREAT); //create shared memory segment
+    if (shmid == -1)
+    {
+        perror("Shared memory");
+        return 1;
+    }
 
-    // if (kitchenData == (void *)-1)
-    // {
-    //     perror("Shared memory attach");
-    //     return 1;
-    // }
-    // else
-    // {
-    //     printf("shmid %d\n", shmid);
-    // }
-    // kitchenData->totalSaladsNeeded = atoi(n_opt);
-    // kitchenData->totalSaladsServed = 0;
-    // // chef
-    // printf("I am a chef\n");
-    // printf("\t tomatoWeight: %d\n", tomatoWeight);
+    chefBook = (ChefBook *)shmat(shmid, NULL, 0); // Attach to the shared memory segment to get a pointer to it.
 
-    // 3 SaladMakers, therefore create 3 salad maker processes
+    if (chefBook == (void *)-1)
+    {
+        perror("Shared memory attach");
+        return 1;
+    }
+    else
+    {
+        printf("shmid %d\n", shmid);
+    }
 
-    // Salad maker who wants tomato and greenpepper semaphores
+    chefBook->totalSaladsNeeded = atoi(n_opt);
+    chefBook->totalSaladsServed = 0;
+
     if ((Tomato_GreenPepper_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
         perror("sem_open");
@@ -186,6 +179,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
     pid_t pids[3];
 
     for (int i = 0; i < 3; i++)
@@ -195,7 +189,9 @@ int main(int argc, char *argv[])
         {
             char saladMakerNumberChar[2];
             sprintf(saladMakerNumberChar, "%d", i);
-            char *sorterData[8] = {"./saladMaker", "-m", "5", "-s", "43342", "-n", saladMakerNumberChar, (char *)NULL};
+            char shmidChar[15];
+            sprintf(shmidChar, "%d", shmid);
+            char *sorterData[8] = {"./saladMaker", "-m", "5", "-s", shmidChar, "-n", saladMakerNumberChar, (char *)NULL};
             if (execv(sorterData[0], sorterData) == -1)
             {
                 perror("Error creating salad maker process");
@@ -207,10 +203,7 @@ int main(int argc, char *argv[])
     //----randomly select 1 pair of veggies
     //----randomly set weights for the two veggie variables
 
-    int totalSaladsNeeded = atoi(n_opt);
-    int saladsServed = 0;
-
-    while (saladsServed < totalSaladsNeeded)
+    while (chefBook->totalSaladsServed < chefBook->totalSaladsNeeded)
     {
         int chosenSaladMakerIndex = randNum(0, 2);
         printf("Randomly chose %d\n", chosenSaladMakerIndex);
@@ -332,7 +325,7 @@ int main(int argc, char *argv[])
         }
 
         printf("Serving salad.. \n");
-        saladsServed += 1;
+        chefBook->totalSaladsServed += 1;
     }
 
     for (int i = 0; i < 3; i++)
@@ -369,6 +362,9 @@ int main(int argc, char *argv[])
     sem_close(GreenPepper_Onions_semaphore_full);
     sem_close(GreenPepper_Onions_semaphore_mutex);
     sem_close(GreenPepper_Onions_semaphore_done);
+
+    shmdt(chefBook);               //detatch from the shared memory segment
+    shmctl(shmid, IPC_RMID, NULL); //delete the shared memory segment
 
     return 0;
 }
