@@ -101,6 +101,13 @@ int main(int argc, char *argv[])
             return 1;
         }
 
+        printf("SALAD MAKERPICKED UP VEGGIES!!\n");
+        if (sem_post(done) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
+
         //critical section
 
         printf("MAKING SALAD!!\n");
@@ -116,12 +123,6 @@ int main(int argc, char *argv[])
         }
 
         if (sem_post(empty) < 0)
-        {
-            perror("mutex probblem");
-            return 1;
-        }
-
-        if (sem_post(done) < 0)
         {
             perror("mutex probblem");
             return 1;

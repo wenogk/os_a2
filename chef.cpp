@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("CHEF waiting for Salad maker now.. \n");
+            printf("CHEF waiting for Salad maker to pick up veggies now.. \n");
             sleep(3);
 
             if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
