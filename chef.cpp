@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if ((Tomato_GreenPepper_semaphore_mutex = sem_open(vegetablePairEnumToSemaphoreName_Mutex(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    if ((Tomato_GreenPepper_semaphore_mutex = sem_open(vegetablePairEnumToSemaphoreName_Mutex(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
         perror("sem_open");
         exit(1);
@@ -166,40 +166,46 @@ int main(int argc, char *argv[])
     //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
 
     //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
-    if (sem_post(Tomato_GreenPepper_semaphore_empty) < 0)
+    for (int i = 0; i < 3; i++)
     {
-        perror("sem post");
-        return 1;
-    }
 
-    if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
-    {
-        perror("sem post");
-        return 1;
-    }
+        if (sem_wait(Tomato_GreenPepper_semaphore_empty) < 0)
+        {
+            perror("sem wait");
+            return 1;
+        }
 
-    printf("In critical section of CHEF! \n");
+        if (sem_wait(Tomato_GreenPepper_semaphore_mutex) < 0)
+        {
+            perror("sem wait");
+            return 1;
+        }
 
-    sleep(2);
+        printf("In critical section of CHEF! \n");
 
-    if (sem_wait(Tomato_GreenPepper_semaphore_mutex) < 0)
-    {
-        perror("sem wait");
-        return 1;
-    }
+        sleep(2);
 
-    if (sem_wait(Tomato_GreenPepper_semaphore_full) < 0)
-    {
-        perror("sem wait");
-        return 1;
-    }
+        if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
+        {
+            perror("sem post");
+            return 1;
+        }
 
-    printf("CHEF waiting for Salad maker now.. \n");
+        if (sem_post(Tomato_GreenPepper_semaphore_full) < 0)
+        {
+            perror("sem post");
+            return 1;
+        }
 
-    if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
-    {
-        perror("sem wait");
-        return 1;
+        printf("CHEF waiting for Salad maker now.. \n");
+
+        if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
+        {
+            perror("sem wait");
+            return 1;
+        }
+
+        printf("CHEF done waiting for Salad maker.. \n");
     }
 
     // if (sem_wait(Tomato_GreenPepper_semaphore) < 0)

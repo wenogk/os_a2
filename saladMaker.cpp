@@ -84,48 +84,48 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    sem_unlink(vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str());
-    int value;
-    sem_getvalue(mutex, &value);
-    printf("%s value is %d\n", vegetablePairEnumToSemaphoreName(me->vegetablesNeeded).c_str(), value);
     printf("Salad maker before\n");
-
-    if (sem_post(full) < 0)
+    while (1)
     {
-        perror("mutex probblem");
-        return 1;
+        printf("full wait\n");
+        if (sem_wait(full) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
+
+        printf("mutex wait\n");
+
+        if (sem_wait(mutex) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
+
+        //critical section
+
+        printf("IN CRITICAL SECTION OF SALAD MAKER!!\n");
+
+        sleep(3);
+
+        if (sem_post(mutex) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
+
+        if (sem_post(empty) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
+
+        if (sem_post(done) < 0)
+        {
+            perror("mutex probblem");
+            return 1;
+        }
     }
-
-    if (sem_post(mutex) < 0)
-    {
-        perror("mutex probblem");
-        return 1;
-    }
-
-    //critical section
-
-    printf("IN CRITICAL SECTION OF SALAD MAKER!!");
-
-    sleep(3);
-
-    if (sem_wait(mutex) < 0)
-    {
-        perror("mutex probblem");
-        return 1;
-    }
-
-    if (sem_wait(empty) < 0)
-    {
-        perror("mutex probblem");
-        return 1;
-    }
-
-    if (sem_post(done) < 0)
-    {
-        perror("mutex probblem");
-        return 1;
-    }
-
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(me->vegetablesNeeded).c_str());

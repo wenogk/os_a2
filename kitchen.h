@@ -87,11 +87,11 @@ string vegetablePairEnumToSemaphoreName(VegetablePair type)
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "/TomatoGreenPepperPair";
+        return "/newTomatoGreenPepperPair";
     case Tomato_Onions:
-        return "/TomatoOnions";
+        return "/newTomatoOnions";
     case GreenPepper_Onions:
-        return "/GreenPepperOnions";
+        return "/newGreenPepperOnions";
     default:
         return "Invalid animal";
     }
@@ -102,11 +102,11 @@ string vegetablePairEnumToSemaphoreName_Empty(VegetablePair type)
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "/TomatoGreenPepperPairEmpty";
+        return "/newTomatoGreenPepperPairEmpty";
     case Tomato_Onions:
-        return "/TomatoOnionsEmpty";
+        return "/newTomatoOnionsEmpty";
     case GreenPepper_Onions:
-        return "/GreenPepperOnionsEmpty";
+        return "/newGreenPepperOnionsEmpty";
     default:
         return "Invalid animal";
     }
@@ -117,11 +117,11 @@ string vegetablePairEnumToSemaphoreName_Full(VegetablePair type)
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "/TomatoGreenPepperPairFull";
+        return "/newTomatoGreenPepperPairFull";
     case Tomato_Onions:
-        return "/TomatoOnionsFull";
+        return "/newTomatoOnionsFull";
     case GreenPepper_Onions:
-        return "/GreenPepperOnionsFull";
+        return "/newGreenPepperOnionsFull";
     default:
         return "Invalid animal";
     }
@@ -132,11 +132,11 @@ string vegetablePairEnumToSemaphoreName_Mutex(VegetablePair type)
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "/TomatoGreenPepperPairMutex";
+        return "/newTomatoGreenPepperPairMutex";
     case Tomato_Onions:
-        return "/TomatoOnionsMutex";
+        return "/newTomatoOnionsMutex";
     case GreenPepper_Onions:
-        return "/GreenPepperOnionsMutex";
+        return "/newGreenPepperOnionsMutex";
     default:
         return "Invalid animal";
     }
@@ -147,11 +147,11 @@ string vegetablePairEnumToSemaphoreName_Done(VegetablePair type)
     switch (type)
     {
     case Tomato_GreenPepper:
-        return "/TomatoGreenPepperPairDone";
+        return "/newTomatoGreenPepperPairDone";
     case Tomato_Onions:
-        return "/TomatoOnionsDone";
+        return "/newTomatoOnionsDone";
     case GreenPepper_Onions:
-        return "/GreenPepperOnionsDone";
+        return "/newGreenPepperOnionsDone";
     default:
         return "Invalid animal";
     }
