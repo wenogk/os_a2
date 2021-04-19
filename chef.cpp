@@ -12,6 +12,9 @@
 using namespace std;
 #include "kitchen.h"
 #include <sys/wait.h>
+#include <cstdlib>
+#include <signal.h>
+#include <ctime>>
 
 int tomatoWeight = 80;
 int greenPepperWeight = 50;
@@ -23,8 +26,14 @@ int onionsWeight = 30;
 
 //kitchen data structure for shared memory
 
+int randNum(int min, int max)
+{
+    return rand() % (max - min + 1) + min;
+}
+
 int main(int argc, char *argv[])
 {
+    srand(time(0));
     sem_t *Tomato_GreenPepper_semaphore_empty;
     sem_t *Tomato_GreenPepper_semaphore_full;
     sem_t *Tomato_GreenPepper_semaphore_mutex;
@@ -100,6 +109,7 @@ int main(int argc, char *argv[])
 
     // 3 SaladMakers, therefore create 3 salad maker processes
 
+    // Salad maker who wants tomato and greenpepper semaphores
     if ((Tomato_GreenPepper_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
         perror("sem_open");
@@ -124,34 +134,74 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // if ((Tomato_Onions_semaphore = sem_open(vegetablePairEnumToSemaphoreName(Tomato_Onions).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
-    // {
-    //     perror("sem_open");
-    //     exit(1);
-    // }
+    //Salad maker who wants onions and tomatoes semaphores
 
-    // if ((GreenPepper_Onions_semaphore = sem_open(vegetablePairEnumToSemaphoreName(GreenPepper_Onions).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
-    // {
-    //     perror("sem_open");
-    //     exit(1);
-    // }
+    if ((Tomato_Onions_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_Onions).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((Tomato_Onions_semaphore_full = sem_open(vegetablePairEnumToSemaphoreName_Full(Tomato_Onions).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((Tomato_Onions_semaphore_mutex = sem_open(vegetablePairEnumToSemaphoreName_Mutex(Tomato_Onions).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((Tomato_Onions_semaphore_done = sem_open(vegetablePairEnumToSemaphoreName_Done(Tomato_Onions).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    //Salad maker who wants green pepper and onions semaphores
+
+    if ((GreenPepper_Onions_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(GreenPepper_Onions).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((GreenPepper_Onions_semaphore_full = sem_open(vegetablePairEnumToSemaphoreName_Full(GreenPepper_Onions).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((GreenPepper_Onions_semaphore_mutex = sem_open(vegetablePairEnumToSemaphoreName_Mutex(GreenPepper_Onions).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
+
+    if ((GreenPepper_Onions_semaphore_done = sem_open(vegetablePairEnumToSemaphoreName_Done(GreenPepper_Onions).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
+    {
+        perror("sem_open");
+        exit(1);
+    }
 
     pid_t pids[3];
 
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     pids[i] = fork();
-    //     if (pids[i] == 0)
-    //     {
-    //         char saladMakerNumberChar[2];
-    //         sprintf(saladMakerNumberChar, "%d", i);
-    //         char *sorterData[8] = {"./saladMaker", "-m", "5", "-s", "43342", "-n", saladMakerNumberChar, (char *)NULL};
-    //         if (execv(sorterData[0], sorterData) == -1)
-    //         {
-    //             perror("Error creating salad maker process");
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < 3; i++)
+    {
+        pids[i] = fork();
+        if (pids[i] == 0)
+        {
+            char saladMakerNumberChar[2];
+            sprintf(saladMakerNumberChar, "%d", i);
+            char *sorterData[8] = {"./saladMaker", "-m", "5", "-s", "43342", "-n", saladMakerNumberChar, (char *)NULL};
+            if (execv(sorterData[0], sorterData) == -1)
+            {
+                perror("Error creating salad maker process");
+            }
+        }
+    }
 
     // if (*GreenPepper_Onions_semaphore < 0)
     // {
@@ -166,46 +216,132 @@ int main(int argc, char *argv[])
     //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
 
     //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
-    for (int i = 0; i < 5; i++)
+    int totalSaladsNeeded = atoi(n_opt);
+    int saladsServed = 0;
+    //
+    while (saladsServed < totalSaladsNeeded)
     {
-
-        if (sem_wait(Tomato_GreenPepper_semaphore_empty) < 0)
+        int chosenSaladMakerIndex = randNum(0, 2);
+        printf("Randomly chose %d\n", chosenSaladMakerIndex);
+        sleep(3);
+        if (chosenSaladMakerIndex == 0)
         {
-            perror("sem wait");
-            return 1;
+            if (sem_wait(GreenPepper_Onions_semaphore_empty) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
+
+            if (sem_wait(GreenPepper_Onions_semaphore_mutex) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
+
+            printf("Giving ingredients to salad maker! \n");
+
+            sleep(2);
+
+            if (sem_post(GreenPepper_Onions_semaphore_mutex) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            if (sem_post(GreenPepper_Onions_semaphore_full) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            printf("CHEF waiting for Salad maker now.. \n");
+
+            if (sem_wait(GreenPepper_Onions_semaphore_done) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
         }
-
-        if (sem_wait(Tomato_GreenPepper_semaphore_mutex) < 0)
+        else if (chosenSaladMakerIndex == 1)
         {
-            perror("sem wait");
-            return 1;
+            if (sem_wait(Tomato_Onions_semaphore_empty) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
+
+            if (sem_wait(Tomato_Onions_semaphore_mutex) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
+
+            printf("Giving ingredients to salad maker! \n");
+
+            sleep(2);
+
+            if (sem_post(Tomato_Onions_semaphore_mutex) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            if (sem_post(Tomato_Onions_semaphore_full) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            printf("CHEF waiting for Salad maker now.. \n");
+
+            if (sem_wait(Tomato_Onions_semaphore_done) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
         }
-
-        printf("Giving ingredients to salad maker! \n");
-
-        sleep(2);
-
-        if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
+        else if (chosenSaladMakerIndex == 2)
         {
-            perror("sem post");
-            return 1;
-        }
+            if (sem_wait(Tomato_GreenPepper_semaphore_empty) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
 
-        if (sem_post(Tomato_GreenPepper_semaphore_full) < 0)
-        {
-            perror("sem post");
-            return 1;
-        }
+            if (sem_wait(Tomato_GreenPepper_semaphore_mutex) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
 
-        printf("CHEF waiting for Salad maker now.. \n");
+            printf("Giving ingredients to salad maker! \n");
 
-        if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
-        {
-            perror("sem wait");
-            return 1;
+            sleep(3);
+
+            if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            if (sem_post(Tomato_GreenPepper_semaphore_full) < 0)
+            {
+                perror("sem post");
+                return 1;
+            }
+
+            printf("CHEF waiting for Salad maker now.. \n");
+            sleep(3);
+
+            if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
+            {
+                perror("sem wait");
+                return 1;
+            }
         }
 
         printf("Serving salad.. \n");
+        saladsServed += 1;
     }
 
     // if (sem_wait(Tomato_GreenPepper_semaphore) < 0)
@@ -224,25 +360,40 @@ int main(int argc, char *argv[])
 
     //kill all saladMakers :D
 
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     wait(NULL); // wait for each salad maker
-    // }
+    for (int i = 0; i < 3; i++)
+    {
+        kill(pids[i], SIGTERM); // kill each salad maker
+    }
 
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Done(Tomato_GreenPepper).c_str());
 
-    // sem_unlink(vegetablePairEnumToSemaphoreName(Tomato_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Empty(Tomato_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Full(Tomato_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(Tomato_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Done(Tomato_Onions).c_str());
+
+    sem_unlink(vegetablePairEnumToSemaphoreName_Empty(GreenPepper_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Full(GreenPepper_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(GreenPepper_Onions).c_str());
+    sem_unlink(vegetablePairEnumToSemaphoreName_Done(GreenPepper_Onions).c_str());
 
     sem_close(Tomato_GreenPepper_semaphore_empty);
     sem_close(Tomato_GreenPepper_semaphore_full);
     sem_close(Tomato_GreenPepper_semaphore_mutex);
     sem_close(Tomato_GreenPepper_semaphore_done);
 
-    // sem_close(Tomato_Onions_semaphore);
-    // sem_close(GreenPepper_Onions_semaphore);
+    sem_close(Tomato_Onions_semaphore_empty);
+    sem_close(Tomato_Onions_semaphore_full);
+    sem_close(Tomato_Onions_semaphore_mutex);
+    sem_close(Tomato_Onions_semaphore_done);
+
+    sem_close(GreenPepper_Onions_semaphore_empty);
+    sem_close(GreenPepper_Onions_semaphore_full);
+    sem_close(GreenPepper_Onions_semaphore_mutex);
+    sem_close(GreenPepper_Onions_semaphore_done);
 
     return 0;
 }

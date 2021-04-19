@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf("Waiting for ingredients %s \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
+        sleep(3);
         if (sem_wait(full) < 0)
         {
             perror("mutex probblem");
