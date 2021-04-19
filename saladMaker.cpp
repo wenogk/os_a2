@@ -87,14 +87,12 @@ int main(int argc, char *argv[])
     printf("Salad maker before\n");
     while (1)
     {
-        printf("full wait\n");
+        printf("Waiting for ingredients %s \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
         if (sem_wait(full) < 0)
         {
             perror("mutex probblem");
             return 1;
         }
-
-        printf("mutex wait\n");
 
         if (sem_wait(mutex) < 0)
         {
@@ -104,9 +102,11 @@ int main(int argc, char *argv[])
 
         //critical section
 
-        printf("IN CRITICAL SECTION OF SALAD MAKER!!\n");
+        printf("MAKING SALAD!!\n");
 
-        sleep(3);
+        sleep(7);
+
+        printf("DONE MAKING SALAD!!\n");
 
         if (sem_post(mutex) < 0)
         {

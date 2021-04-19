@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
     //----V() the semaphore for that pair of veggies - aka giving the veggies to the salad maker to make
 
     //----P() the semaphore for that pair of veggies - aka waiting for salad maker to make
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
     {
 
         if (sem_wait(Tomato_GreenPepper_semaphore_empty) < 0)
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        printf("In critical section of CHEF! \n");
+        printf("Giving ingredients to salad maker! \n");
 
         sleep(2);
 
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        printf("CHEF done waiting for Salad maker.. \n");
+        printf("Serving salad.. \n");
     }
 
     // if (sem_wait(Tomato_GreenPepper_semaphore) < 0)
