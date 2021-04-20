@@ -91,15 +91,16 @@ int main(int argc, char *argv[])
             // ctime() used to give the present time
             while (twoOrMoreSaladMakersDoingWork(chefBook))
                 ;
-
             time_t endTime = time(NULL);
             char *startTime_no_newline;
             char *endTime_no_newline;
 
-            startTime_no_newline = ctime(&startTime); //myctime[ strlen(myctime) - 1 ] = '\0';
+            startTime_no_newline = strdup(ctime(&startTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
             startTime_no_newline[strlen(startTime_no_newline) - 1] = '\0';
-            endTime_no_newline = ctime(&endTime); //myctime[ strlen(myctime) - 1 ] = '\0';
+
+            endTime_no_newline = strdup(ctime(&endTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
             endTime_no_newline[strlen(endTime_no_newline) - 1] = '\0';
+
             std::string stringToAppend;             // an empty string
             stringToAppend += startTime_no_newline; // append the first character
             stringToAppend += " to ";
