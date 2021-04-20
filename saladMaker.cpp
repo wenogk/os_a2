@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     printf("Salad maker before\n");
     while (1)
     {
-        time_t startWaiting = time(0);
+        time_t startWaiting = clock(); //time(0);
         printf("Waiting for ingredients %s \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
         //sleep(3);
         if (sem_wait(full) < 0)
@@ -142,12 +142,13 @@ int main(int argc, char *argv[])
         }
         printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
 
-        double secondsSinceStartedToWait = difftime(time(0), startWaiting);
+        double secondsSinceStartedToWait = float(clock() - startWaiting) / CLOCKS_PER_SEC; //difftime(time(0), startWaiting);
         chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait;
 
         printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
         double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);
         sleep(saladMakingTime);
+        chefBook->SaladMakerTotalTimeWorking[saladMakerNumber] += saladMakingTime;
 
         chefBook->NumberOfTotalSaladsMadeBySaladMaker[saladMakerNumber] += 1;
 

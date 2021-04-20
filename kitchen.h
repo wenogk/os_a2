@@ -30,6 +30,8 @@ struct ChefBook
 
     double SaladMakerTotalTimeWaiting[3];
 
+    double SaladMakerTotalTimeWorking[3];
+
     bool isSaladMakerDoingWork[3];
 
     float totalPickedGreenPepperWeightForSaladMaker0;
@@ -96,6 +98,10 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 0 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[0]);
     printf("\tSalad Maker 1 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[1]);
     printf("\tSalad Maker 2 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[2]);
+
+    printf("\tSalad Maker 0 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[0]);
+    printf("\tSalad Maker 1 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[1]);
+    printf("\tSalad Maker 2 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[2]);
 }
 
 string vegetablePairEnumToSemaphoreName(VegetablePair type)
