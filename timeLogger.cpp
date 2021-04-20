@@ -93,9 +93,17 @@ int main(int argc, char *argv[])
                 ;
 
             time_t endTime = time(NULL);
-            std::string stringToAppend;          // an empty string
-            stringToAppend += ctime(&startTime); // append the first character
-            stringToAppend += ctime(&endTime);   // append the second character
+            char *startTime_no_newline;
+            char *endTime_no_newline;
+
+            startTime_no_newline = ctime(&startTime); //myctime[ strlen(myctime) - 1 ] = '\0';
+            startTime_no_newline[strlen(startTime_no_newline) - 1] = '\0';
+            endTime_no_newline = ctime(&endTime); //myctime[ strlen(myctime) - 1 ] = '\0';
+            endTime_no_newline[strlen(endTime_no_newline) - 1] = '\0';
+            std::string stringToAppend;             // an empty string
+            stringToAppend += startTime_no_newline; // append the first character
+            stringToAppend += " to ";
+            stringToAppend += endTime_no_newline; // append the second character
             // ctime() used to give the present time
             printf("time range - %s\n", stringToAppend.c_str());
 
