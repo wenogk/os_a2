@@ -176,6 +176,19 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    pid_t timeLoggerPid;
+    timeLoggerPid = fork();
+    if (timeLoggerPid == 0)
+    {
+        char shmidChar[15];
+        sprintf(shmidChar, "%d", shmid);
+        char *sorterData[4] = {"./timeLogger", "-s", shmidChar, (char *)NULL};
+        if (execv(sorterData[0], sorterData) == -1)
+        {
+            perror("Error creating salad maker process");
+        }
+    }
+
     // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
     pid_t pids[3];
 
@@ -335,6 +348,8 @@ int main(int argc, char *argv[])
     {
         kill(pids[i], SIGTERM); // kill each salad maker
     }
+
+    kill(timeLoggerPid, SIGTERM);
 
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(Tomato_GreenPepper).c_str());

@@ -7,6 +7,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include "kitchen.h"
+#include <ctime>
 
 //f
 #include <fcntl.h>    /* For O_* constants */
