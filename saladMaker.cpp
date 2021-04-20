@@ -18,9 +18,16 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#include <time.h>
+
 int randNum(int min, int max)
 {
     return rand() % (max - min + 1) + min;
+}
+
+double randDouble(int min, int max)
+{
+    return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
 }
 
 int main(int argc, char *argv[])
@@ -69,6 +76,7 @@ int main(int argc, char *argv[])
     SaladMaker *me;
     int saladMakerNumber = atoi(n_opt);
     int shmid = atoi(s_opt);
+    double salmkrtime = atof(m_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
     struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment */
@@ -110,11 +118,12 @@ int main(int argc, char *argv[])
     printf("Salad maker before\n");
     while (1)
     {
+        time_t startWaiting = time(0);
         printf("Waiting for ingredients %s \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
         //sleep(3);
         if (sem_wait(full) < 0)
         {
-            perror("mutex probblem");
+            perror("full probblem");
             return 1;
         }
 
@@ -124,8 +133,6 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
-
         chefBook->isSaladMakerDoingWork[saladMakerNumber] = true;
 
         if (sem_post(done) < 0)
@@ -133,10 +140,14 @@ int main(int argc, char *argv[])
             perror("mutex probblem");
             return 1;
         }
+        printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
+
+        double secondsSinceStartedToWait = difftime(time(0), startWaiting);
+        chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait;
 
         printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
-
-        sleep(randNum(1, 6));
+        double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);
+        sleep(saladMakingTime);
 
         chefBook->NumberOfTotalSaladsMadeBySaladMaker[saladMakerNumber] += 1;
 

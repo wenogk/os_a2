@@ -27,6 +27,13 @@ int randNum(int min, int max)
     return rand() % (max - min + 1) + min;
 }
 
+double randDouble(int min, int max)
+{
+    return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
+}
+
+//random numebr functions taken from https://stackoverflow.com/questions/10776073/random-double-between-min-and-max
+
 int main(int argc, char *argv[])
 {
     srand(time(0));
@@ -48,12 +55,14 @@ int main(int argc, char *argv[])
     int opt;
     bool flagN = false; //number of salads flag
     bool flagM = false; //chhef time flag
+    bool flagS = false; //salad maker time if running through chef fork
 
     char *n_opt = 0;
     char *m_opt = 0;
+    char *s_opt = 0;
 
     //get the arguments for the chef program
-    while ((opt = getopt(argc, argv, "n:m:")) != -1)
+    while ((opt = getopt(argc, argv, "n:m:s:")) != -1)
     { // for each option... n and m
         switch (opt)
         {
@@ -64,6 +73,10 @@ int main(int argc, char *argv[])
         case 'm':
             m_opt = optarg;
             flagM = true;
+            break;
+        case 's':
+            s_opt = optarg;
+            flagS = true;
             break;
         case '?': // unknown option...
             printf("Unknown Option %s", opt);
@@ -82,6 +95,7 @@ int main(int argc, char *argv[])
     struct ChefBook *chefBook;
     char *bufptr;
     int spaceavailable;
+    double cheftime = atof(m_opt);
 
     shmid = shmget(IPC_PRIVATE, sizeof(struct ChefBook), 0644 | IPC_CREAT); //create shared memory segment
     if (shmid == -1)
@@ -101,6 +115,10 @@ int main(int argc, char *argv[])
     {
         printf("shmid %d\n", shmid);
     }
+
+    chefBook->SaladMakerTotalTimeWaiting[0] = 0.0;
+    chefBook->SaladMakerTotalTimeWaiting[1] = 0.0;
+    chefBook->SaladMakerTotalTimeWaiting[2] = 0.0;
 
     if ((Tomato_GreenPepper_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
@@ -202,8 +220,17 @@ int main(int argc, char *argv[])
             char saladMakerNumberChar[2];
             sprintf(saladMakerNumberChar, "%d", i);
             char shmidChar[15];
+            char saladMakerTime[15];
             sprintf(shmidChar, "%d", shmid);
-            char *sorterData[8] = {"./saladMaker", "-m", "5", "-s", shmidChar, "-n", saladMakerNumberChar, (char *)NULL};
+            if (flagS)
+            {
+                sprintf(saladMakerTime, "%f", atof(s_opt));
+            }
+            else
+            {
+                sprintf(saladMakerTime, "%f", 2.0);
+            }
+            char *sorterData[8] = {"./saladMaker", "-m", saladMakerTime, "-s", shmidChar, "-n", saladMakerNumberChar, (char *)NULL};
             if (execv(sorterData[0], sorterData) == -1)
             {
                 perror("Error creating salad maker process");
@@ -337,12 +364,22 @@ int main(int argc, char *argv[])
             }
         }
 
+        double sleepyTime = randDouble(cheftime * 0.5, cheftime);
+        sleep(sleepyTime);
+
         printf("Serving salad.. \n");
         totalVeggiePairsGivenToSaladMakers += 1;
     }
 
     while (chefBook->isSaladMakerDoingWork[0] || chefBook->isSaladMakerDoingWork[1] || chefBook->isSaladMakerDoingWork[2])
         ;
+
+    for (int i = 0; i < 3; i++)
+    {
+        kill(pids[i], SIGTERM); // kill each salad maker
+    }
+
+    kill(timeLoggerPid, SIGTERM);
 
     logChefBook(chefBook);
 
@@ -354,13 +391,6 @@ int main(int argc, char *argv[])
         std::cout << str << endl;
     }
     printf("----------------\n");
-
-    for (int i = 0; i < 3; i++)
-    {
-        kill(pids[i], SIGTERM); // kill each salad maker
-    }
-
-    kill(timeLoggerPid, SIGTERM);
 
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(Tomato_GreenPepper).c_str());
