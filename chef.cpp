@@ -15,6 +15,8 @@ using namespace std;
 #include <cstdlib>
 #include <signal.h>
 #include <ctime>
+#include <iostream>
+#include <fstream>
 
 int tomatoWeight = 80;
 int greenPepperWeight = 50;
@@ -343,6 +345,15 @@ int main(int argc, char *argv[])
         ;
 
     logChefBook(chefBook);
+
+    printf("----------------\n");
+    std::ifstream file("intersectingTimeLogger.txt");
+    std::string str;
+    while (std::getline(file, str))
+    {
+        std::cout << str << endl;
+    }
+    printf("----------------\n");
 
     for (int i = 0; i < 3; i++)
     {

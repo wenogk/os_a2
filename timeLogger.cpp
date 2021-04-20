@@ -26,24 +26,23 @@ bool twoOrMoreSaladMakersDoingWork(ChefBook *chefBook)
 
 int main(int argc, char *argv[])
 {
-    ofstream starter("fileLogger3.txt", ios::out);
+    ofstream starter("intersectingTimeLogger.txt", ios::out);
     if (!starter)
     {
         cout << "Error Opening File" << endl;
         return -1;
     }
-    starter << "TIMING RANGES THAT TWO OR MORE SALAD MAKERS WERE WORKING AT THE SAME TIME\n------------------------\n"
+    starter << "TIME RANGES THAT TWO OR MORE SALAD MAKERS WERE WORKING AT THE SAME TIME\n"
             << endl;
     starter.close();
 
-    ofstream writer("fileLogger3.txt", ios::app);
+    ofstream writer("intersectingTimeLogger.txt", ios::app);
     //ios::out
     if (!writer)
     {
         cout << "Error Opening File" << endl;
         return -1;
     }
-    std::ofstream outfile;
     int opt;
     bool flagS = false; // identifier that the shared memory segments has
 
@@ -106,9 +105,8 @@ int main(int argc, char *argv[])
             stringToAppend += " to ";
             stringToAppend += endTime_no_newline; // append the second character
             // ctime() used to give the present time
-            printf("time range - %s\n", stringToAppend.c_str());
 
-            writer << stringToAppend << endl;
+            writer << "\t" << stringToAppend << endl;
         }
     }
     writer.close();
