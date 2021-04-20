@@ -95,9 +95,9 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 1 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[1]);
     printf("\tSalad Maker 2 total salads made: %d \n\n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[2]);
 
-    printf("\tSalad Maker 0 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[0]);
-    printf("\tSalad Maker 1 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[1]);
-    printf("\tSalad Maker 2 total time spent waiting: %.2f seconds \n", chefBook->SaladMakerTotalTimeWaiting[2]);
+    printf("\tSalad Maker 0 total time spent waiting: %g seconds \n", chefBook->SaladMakerTotalTimeWaiting[0]);
+    printf("\tSalad Maker 1 total time spent waiting: %g seconds \n", chefBook->SaladMakerTotalTimeWaiting[1]);
+    printf("\tSalad Maker 2 total time spent waiting: %g seconds \n\n", chefBook->SaladMakerTotalTimeWaiting[2]);
 
     printf("\tSalad Maker 0 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[0]);
     printf("\tSalad Maker 1 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[1]);
