@@ -20,6 +20,10 @@
 
 #include <time.h>
 
+double tomatoWeight = 80.0;
+double greenPepperWeight = 50.0;
+double onionsWeight = 30.0;
+
 int randNum(int min, int max)
 {
     return rand() % (max - min + 1) + min;
@@ -144,6 +148,28 @@ int main(int argc, char *argv[])
         time_t endWaiting = time(0);
         double secondsSinceStartedToWait = difftime(endWaiting, startWaiting); //difftime(time(0), startWaiting);
         chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait;
+
+        if (saladMakerNumber == 0)
+        {
+            double selfPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
+            chefBook->totalPickedOnionWeightForSaladMaker0 += chefBook->currentPickedOnionWeight;
+            chefBook->totalPickedGreenPepperWeightForSaladMaker0 += chefBook->currentPickedGreenPepperWeight;
+            chefBook->totalSelfPickedTomatoWeightForSaladMaker0 += selfPickedTomatoWeight;
+        }
+        else if (saladMakerNumber == 1)
+        {
+            double selfPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
+            chefBook->totalPickedOnionWeightForSaladMaker1 += chefBook->currentPickedOnionWeight;
+            chefBook->totalSelfPickedGreenPepperWeightForSaladMaker1 += selfPickedGreenPepperWeight;
+            chefBook->totalPickedTomatoWeightForSaladMaker1 += chefBook->currentPickedTomatoWeight;
+        }
+        else if (saladMakerNumber == 2)
+        {
+            double selfPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
+            chefBook->totalSelfPickedOnionWeightForSaladMaker2 += selfPickedOnionWeight;
+            chefBook->totalPickedGreenPepperWeightForSaladMaker2 += chefBook->currentPickedGreenPepperWeight;
+            chefBook->totalPickedTomatoWeightForSaladMaker2 += chefBook->currentPickedTomatoWeight;
+        }
 
         printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
         double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);

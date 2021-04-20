@@ -36,12 +36,15 @@ struct ChefBook
 
     float totalPickedGreenPepperWeightForSaladMaker0;
     float totalPickedOnionWeightForSaladMaker0;
+    float totalSelfPickedTomatoWeightForSaladMaker0;
 
     float totalPickedTomatoWeightForSaladMaker1;
     float totalPickedOnionWeightForSaladMaker1;
+    float totalSelfPickedGreenPepperWeightForSaladMaker1;
 
     float totalPickedTomatoWeightForSaladMaker2;
     float totalPickedGreenPepperWeightForSaladMaker2;
+    float totalSelfPickedOnionWeightForSaladMaker2;
 };
 
 struct SaladMaker
@@ -94,6 +97,10 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 0 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[0]);
     printf("\tSalad Maker 1 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[1]);
     printf("\tSalad Maker 2 total salads made: %d \n\n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[2]);
+
+    printf("\tSalad Maker 0 total onions %.2fg + green pepper %.2fg + self picked tomatoes %.2fg = %.2fg\n", chefBook->totalPickedOnionWeightForSaladMaker0, chefBook->totalPickedGreenPepperWeightForSaladMaker0, chefBook->totalSelfPickedTomatoWeightForSaladMaker0, chefBook->totalPickedOnionWeightForSaladMaker0 + chefBook->totalPickedGreenPepperWeightForSaladMaker0 + chefBook->totalSelfPickedTomatoWeightForSaladMaker0);
+    printf("\tSalad Maker 1 total onions %.2fg + self picked green pepper %.2fg + tomatoes %.2fg = %.2fg\n", chefBook->totalPickedOnionWeightForSaladMaker1, chefBook->totalSelfPickedGreenPepperWeightForSaladMaker1, chefBook->totalPickedTomatoWeightForSaladMaker1, chefBook->totalPickedOnionWeightForSaladMaker1 + chefBook->totalSelfPickedGreenPepperWeightForSaladMaker1 + chefBook->totalPickedTomatoWeightForSaladMaker1);
+    printf("\tSalad Maker 2 total self picked onions %.2fg + green pepper %.2fg + tomatoes %.2fg = %.2fg\n\n", chefBook->totalSelfPickedOnionWeightForSaladMaker2, chefBook->totalPickedGreenPepperWeightForSaladMaker2, chefBook->totalPickedTomatoWeightForSaladMaker2, chefBook->totalSelfPickedOnionWeightForSaladMaker2 + chefBook->totalPickedGreenPepperWeightForSaladMaker2 + chefBook->totalPickedTomatoWeightForSaladMaker2);
 
     printf("\tSalad Maker 0 total time spent waiting: %g seconds \n", chefBook->SaladMakerTotalTimeWaiting[0]);
     printf("\tSalad Maker 1 total time spent waiting: %g seconds \n", chefBook->SaladMakerTotalTimeWaiting[1]);

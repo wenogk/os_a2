@@ -18,9 +18,9 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 
-int tomatoWeight = 80;
-int greenPepperWeight = 50;
-int onionsWeight = 30;
+double tomatoWeight = 80.0;
+double greenPepperWeight = 50.0;
+double onionsWeight = 30.0;
 
 int randNum(int min, int max)
 {
@@ -265,6 +265,8 @@ int main(int argc, char *argv[])
             }
 
             ////sleep(2);
+            chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
+            chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
 
             if (sem_post(GreenPepper_Onions_semaphore_mutex) < 0)
             {
@@ -302,7 +304,8 @@ int main(int argc, char *argv[])
 
             printf("Giving ingredients to salad maker! \n");
 
-            ////sleep(2);
+            chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
+            chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
             if (sem_post(Tomato_Onions_semaphore_mutex) < 0)
             {
@@ -340,7 +343,8 @@ int main(int argc, char *argv[])
 
             printf("Giving ingredients to salad maker! \n");
 
-            ////sleep(3);
+            chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
+            chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
             if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
             {
