@@ -16,18 +16,8 @@
 #include <sys/shm.h>
 #include <time.h>
 #include <cstring>
-
-const string currentDateTime()
-{
-    //This function was taken from https://stackoverflow.com/a/10467633
-    time_t now = time(0);
-    struct tm tstruct;
-    char buf[80];
-    tstruct = *localtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-
-    return buf;
-}
+#include <fstream>
+#include <iostream>
 
 bool twoOrMoreSaladMakersDoingWork(ChefBook *chefBook)
 {
@@ -36,7 +26,24 @@ bool twoOrMoreSaladMakersDoingWork(ChefBook *chefBook)
 
 int main(int argc, char *argv[])
 {
+    ofstream starter("fileLogger3.txt", ios::out);
+    if (!starter)
+    {
+        cout << "Error Opening File" << endl;
+        return -1;
+    }
+    starter << "TIMING RANGES THAT TWO OR MORE SALAD MAKERS WERE WORKING AT THE SAME TIME\n------------------------\n"
+            << endl;
+    starter.close();
 
+    ofstream writer("fileLogger3.txt", ios::app);
+    //ios::out
+    if (!writer)
+    {
+        cout << "Error Opening File" << endl;
+        return -1;
+    }
+    std::ofstream outfile;
     int opt;
     bool flagS = false; // identifier that the shared memory segments has
 
@@ -65,15 +72,6 @@ int main(int argc, char *argv[])
 
     struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment */
 
-    FILE *log = fopen("timeLogger.txt", "at");
-    if (!log)
-        log = fopen("timeLogger.txt", "wt");
-    if (!log)
-    {
-        perror("can not open logfile.txt for writing.\n");
-        return 1; // bail out if we can't log
-    }
-
     if (chefBook == (void *)-1)
     {
         perror("Shared memory attach");
@@ -89,17 +87,22 @@ int main(int argc, char *argv[])
         if (twoOrMoreSaladMakersDoingWork(chefBook))
         {
 
-            string startTime = currentDateTime(); //start time
+            time_t startTime = time(NULL);
+            // ctime() used to give the present time
             while (twoOrMoreSaladMakersDoingWork(chefBook))
                 ;
 
-            string endTime = currentDateTime(); //end timer
+            time_t endTime = time(NULL);
+            std::string stringToAppend;          // an empty string
+            stringToAppend += ctime(&startTime); // append the first character
+            stringToAppend += ctime(&endTime);   // append the second character
+            // ctime() used to give the present time
+            printf("time range - %s\n", stringToAppend.c_str());
 
-            string stringToAppend = startTime + " to " + endTime + "\n";
-            fprintf(log, "%s", stringToAppend.c_str()); //append start and end time to file
+            writer << stringToAppend << endl;
         }
     }
-
+    writer.close();
     int detatch = shmdt(chefBook); /* Detach segment */
 
     if (detatch < 0)
@@ -107,8 +110,6 @@ int main(int argc, char *argv[])
         perror(" Detachment .\n");
         return 1;
     }
-
-    fclose(log);
 
     return 0;
 }

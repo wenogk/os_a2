@@ -18,6 +18,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+int randNum(int min, int max)
+{
+    return rand() % (max - min + 1) + min;
+}
+
 int main(int argc, char *argv[])
 {
     sem_t *empty;
@@ -106,7 +111,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf("Waiting for ingredients %s \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str());
-        sleep(3);
+        //sleep(3);
         if (sem_wait(full) < 0)
         {
             perror("mutex probblem");
@@ -131,7 +136,7 @@ int main(int argc, char *argv[])
 
         printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
 
-        sleep(7);
+        sleep(randNum(1, 6));
 
         chefBook->NumberOfTotalSaladsMadeBySaladMaker[saladMakerNumber] += 1;
 

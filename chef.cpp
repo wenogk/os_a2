@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
     {
         int chosenSaladMakerIndex = randNum(0, 2);
         printf("Randomly chose %d\n", chosenSaladMakerIndex);
-        sleep(3);
+        ////sleep(3);
         if (chosenSaladMakerIndex == 0)
         {
             if (sem_wait(GreenPepper_Onions_semaphore_empty) < 0)
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            sleep(2);
+            ////sleep(2);
 
             if (sem_post(GreenPepper_Onions_semaphore_mutex) < 0)
             {
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
 
             printf("Giving ingredients to salad maker! \n");
 
-            sleep(2);
+            ////sleep(2);
 
             if (sem_post(Tomato_Onions_semaphore_mutex) < 0)
             {
@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
 
             printf("Giving ingredients to salad maker! \n");
 
-            sleep(3);
+            ////sleep(3);
 
             if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
             {
@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
             }
 
             printf("CHEF waiting for Salad maker to pick up veggies now.. \n");
-            sleep(3);
+            //sleep(3);
 
             if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
             {
