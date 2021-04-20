@@ -1,5 +1,5 @@
 CC=g++
-all: chef saladMaker
+all: chef saladMaker timeLogger
 
 chef: chef.cpp
 	$(CC) chef.cpp -o chef -lpthread
@@ -7,5 +7,8 @@ chef: chef.cpp
 saladMaker: saladMaker.cpp
 	$(CC) saladMaker.cpp -o saladMaker -lpthread
 
+timeLogger : timeLogger.cpp
+	$(CC) timeLogger.cpp -o timeLogger -lpthread
+
 clean:
-	rm *.o chef saladMaker
+	rm *.o chef saladMaker timeLogger

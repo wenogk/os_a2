@@ -7,9 +7,6 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include "kitchen.h"
-#include <ctime>
-
-//f
 #include <fcntl.h>    /* For O_* constants */
 #include <sys/stat.h> /* For mode constants */
 #include <semaphore.h>
@@ -17,6 +14,25 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <time.h>
+#include <cstring>
+
+const string currentDateTime()
+{
+    //This function was taken from https://stackoverflow.com/a/10467633
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+
+bool twoOrMoreSaladMakersDoingWork(ChefBook *chefBook)
+{
+    return ((chefBook->isSaladMakerDoingWork[0] && chefBook->isSaladMakerDoingWork[1]) || (chefBook->isSaladMakerDoingWork[0] && chefBook->isSaladMakerDoingWork[2]) || (chefBook->isSaladMakerDoingWork[1] && chefBook->isSaladMakerDoingWork[2]));
+}
 
 int main(int argc, char *argv[])
 {
@@ -49,6 +65,15 @@ int main(int argc, char *argv[])
 
     struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment */
 
+    FILE *log = fopen("timeLogger.txt", "at");
+    if (!log)
+        log = fopen("timeLogger.txt", "wt");
+    if (!log)
+    {
+        perror("can not open logfile.txt for writing.\n");
+        return 1; // bail out if we can't log
+    }
+
     if (chefBook == (void *)-1)
     {
         perror("Shared memory attach");
@@ -59,6 +84,22 @@ int main(int argc, char *argv[])
         printf("timeLogger %d shmid\n", shmid);
     }
 
+    while (1)
+    {
+        if (twoOrMoreSaladMakersDoingWork(chefBook))
+        {
+
+            string startTime = currentDateTime(); //start time
+            while (twoOrMoreSaladMakersDoingWork(chefBook))
+                ;
+
+            string endTime = currentDateTime(); //end timer
+
+            string stringToAppend = startTime + " to " + endTime + "\n";
+            fprintf(log, "%s", stringToAppend.c_str()); //append start and end time to file
+        }
+    }
+
     int detatch = shmdt(chefBook); /* Detach segment */
 
     if (detatch < 0)
@@ -66,6 +107,8 @@ int main(int argc, char *argv[])
         perror(" Detachment .\n");
         return 1;
     }
+
+    fclose(log);
 
     return 0;
 }
