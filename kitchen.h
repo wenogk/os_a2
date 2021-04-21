@@ -111,6 +111,21 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 2 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[2]);
 }
 
+VegetablePair saladMakerNumberToVegetablePairNeeded(int index)
+{
+    switch (index)
+    {
+    case 0:
+        return GreenPepper_Onions;
+    case 1:
+        return Tomato_Onions;
+    case 2:
+        return Tomato_GreenPepper;
+    default:
+        return Tomato_GreenPepper;
+    }
+}
+
 string vegetablePairEnumToNormalStringWithWeights(VegetablePair type, ChefBook *chefBook)
 {
     switch (type)

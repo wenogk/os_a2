@@ -32,6 +32,21 @@ double randDouble(int min, int max)
     return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
 }
 
+void logString(string logString)
+{
+    ofstream logFile;
+    logFile.open("logFile.txt", ios::app);
+    time_t currentTime = time(NULL);
+    char *currentTime_no_newline;
+    currentTime_no_newline = strdup(ctime(&currentTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
+    currentTime_no_newline[strlen(currentTime_no_newline) - 1] = '\0';
+    std::string stringToAppend;
+    stringToAppend += currentTime_no_newline;
+    logFile << stringToAppend << " > " << logString << endl
+            << "--------------" << endl;
+    logFile.close();
+}
+
 //random numebr functions taken from https://stackoverflow.com/questions/10776073/random-double-between-min-and-max
 
 int main(int argc, char *argv[])
@@ -260,6 +275,7 @@ int main(int argc, char *argv[])
     {
         int chosenSaladMakerIndex = randNum(0, 2);
         printf("Randomly chose %d\n", chosenSaladMakerIndex);
+        logString("Chef randomly picked up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
         ////sleep(3);
         if (chosenSaladMakerIndex == 0)
         {
@@ -279,6 +295,8 @@ int main(int argc, char *argv[])
             chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
             chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
 
+            logString("Chef placed " + vegetablePairEnumToNormalStringWithWeights(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex), chefBook) + " on Salad Maker " + to_string(chosenSaladMakerIndex) + "\'s workspace.");
+
             if (sem_post(GreenPepper_Onions_semaphore_mutex) < 0)
             {
                 perror("sem post");
@@ -292,6 +310,7 @@ int main(int argc, char *argv[])
             }
 
             printf("CHEF waiting for Salad maker now.. \n");
+            logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
 
             if (sem_wait(GreenPepper_Onions_semaphore_done) < 0)
             {
@@ -318,6 +337,8 @@ int main(int argc, char *argv[])
             chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
             chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
+            logString("Chef placed " + vegetablePairEnumToNormalStringWithWeights(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex), chefBook) + " on Salad Maker " + to_string(chosenSaladMakerIndex) + "\'s workspace.");
+
             if (sem_post(Tomato_Onions_semaphore_mutex) < 0)
             {
                 perror("sem post");
@@ -331,6 +352,7 @@ int main(int argc, char *argv[])
             }
 
             printf("CHEF waiting for Salad maker now.. \n");
+            logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
 
             if (sem_wait(Tomato_Onions_semaphore_done) < 0)
             {
@@ -357,6 +379,8 @@ int main(int argc, char *argv[])
             chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
             chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
+            logString("Chef placed " + vegetablePairEnumToNormalStringWithWeights(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex), chefBook) + " on Salad Maker " + to_string(chosenSaladMakerIndex) + "\'s workspace.");
+
             if (sem_post(Tomato_GreenPepper_semaphore_mutex) < 0)
             {
                 perror("sem post");
@@ -370,6 +394,7 @@ int main(int argc, char *argv[])
             }
 
             printf("CHEF waiting for Salad maker to pick up veggies now.. \n");
+            logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
             //sleep(3);
 
             if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
