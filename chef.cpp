@@ -61,6 +61,17 @@ int main(int argc, char *argv[])
     char *m_opt = 0;
     char *s_opt = 0;
 
+    ofstream starter("logFile.txt", ios::out);
+    if (!starter)
+    {
+        cout << "Error Opening File" << endl;
+        return -1;
+    }
+    starter << "LOGS OF SALAD MAKING OF ROMENO'S KITCHEN" << endl
+            << "---------------" << endl
+            << endl;
+    starter.close();
+
     //get the arguments for the chef program
     while ((opt = getopt(argc, argv, "n:m:s:")) != -1)
     { // for each option... n and m

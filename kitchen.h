@@ -111,6 +111,36 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 2 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[2]);
 }
 
+string vegetablePairEnumToNormalStringWithWeights(VegetablePair type, ChefBook *chefBook)
+{
+    switch (type)
+    {
+    case Tomato_GreenPepper:
+        return to_string(chefBook->currentPickedTomatoWeight) + "g Tomato and " + to_string(chefBook->currentPickedGreenPepperWeight) + "g Green Pepper";
+    case Tomato_Onions:
+        return to_string(chefBook->currentPickedTomatoWeight) + "g Tomato and " + to_string(chefBook->currentPickedOnionWeight) + "g Onions";
+    case GreenPepper_Onions:
+        return to_string(chefBook->currentPickedGreenPepperWeight) + "g Green Pepper and " + to_string(chefBook->currentPickedOnionWeight) + "g Onions";
+    default:
+        return "Invalid vegetable pair";
+    }
+}
+
+string vegetablePairEnumToNormalString(VegetablePair type)
+{
+    switch (type)
+    {
+    case Tomato_GreenPepper:
+        return "Tomato and Green Pepper";
+    case Tomato_Onions:
+        return "Tomato and Onions";
+    case GreenPepper_Onions:
+        return "Green Pepper and Onions";
+    default:
+        return "Invalid vegetable pair";
+    }
+}
+
 string vegetablePairEnumToSemaphoreName(VegetablePair type)
 {
     switch (type)
@@ -122,7 +152,7 @@ string vegetablePairEnumToSemaphoreName(VegetablePair type)
     case GreenPepper_Onions:
         return "/newGreenPepperOnions";
     default:
-        return "Invalid animal";
+        return "Invalid vegetable pair";
     }
 }
 
@@ -137,7 +167,7 @@ string vegetablePairEnumToSemaphoreName_Empty(VegetablePair type)
     case GreenPepper_Onions:
         return "/newGreenPepperOnionsEmpty";
     default:
-        return "Invalid animal";
+        return "Invalid vegetable pair";
     }
 }
 
@@ -152,7 +182,7 @@ string vegetablePairEnumToSemaphoreName_Full(VegetablePair type)
     case GreenPepper_Onions:
         return "/newGreenPepperOnionsFull";
     default:
-        return "Invalid animal";
+        return "Invalid vegetable pair";
     }
 }
 
@@ -167,7 +197,7 @@ string vegetablePairEnumToSemaphoreName_Mutex(VegetablePair type)
     case GreenPepper_Onions:
         return "/newGreenPepperOnionsMutex";
     default:
-        return "Invalid animal";
+        return "Invalid vegetable pair";
     }
 }
 
@@ -182,6 +212,6 @@ string vegetablePairEnumToSemaphoreName_Done(VegetablePair type)
     case GreenPepper_Onions:
         return "/newGreenPepperOnionsDone";
     default:
-        return "Invalid animal";
+        return "Invalid vegetable pair";
     }
 }

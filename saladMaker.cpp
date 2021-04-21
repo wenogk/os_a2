@@ -19,6 +19,7 @@
 #include <sys/shm.h>
 
 #include <time.h>
+#include <fstream>
 
 double tomatoWeight = 80.0;
 double greenPepperWeight = 50.0;
@@ -32,6 +33,21 @@ int randNum(int min, int max)
 double randDouble(int min, int max)
 {
     return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
+}
+
+void logString(string logString)
+{
+    ofstream logFile;
+    logFile.open("logFile.txt", ios::app);
+    time_t currentTime = time(NULL);
+    char *currentTime_no_newline;
+    currentTime_no_newline = strdup(ctime(&currentTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
+    currentTime_no_newline[strlen(currentTime_no_newline) - 1] = '\0';
+    std::string stringToAppend;
+    stringToAppend += currentTime_no_newline;
+    logFile << stringToAppend << " > " << logString << endl
+            << "--------------" << endl;
+    logFile.close();
 }
 
 int main(int argc, char *argv[])
@@ -124,7 +140,9 @@ int main(int argc, char *argv[])
     {
         time_t startWaiting = time(0); //time(0);
         printf("Waiting for ingredients %s clock is %f \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str(), float(startWaiting));
-        //sleep(3);
+
+        logString("Salad Maker " + to_string(saladMakerNumber) + " waiting for " + vegetablePairEnumToNormalString(me->vegetablesNeeded).c_str());
+
         if (sem_wait(full) < 0)
         {
             perror("full probblem");
@@ -145,6 +163,7 @@ int main(int argc, char *argv[])
             return 1;
         }
         printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
+        logString("Salad Maker " + to_string(saladMakerNumber) + " picked up " + vegetablePairEnumToNormalStringWithWeights(me->vegetablesNeeded, chefBook).c_str());
         time_t endWaiting = time(0);
         double secondsSinceStartedToWait = difftime(endWaiting, startWaiting); //difftime(time(0), startWaiting);
         chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait;
@@ -172,6 +191,7 @@ int main(int argc, char *argv[])
         }
 
         printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
+        logString("Salad Maker " + to_string(saladMakerNumber) + " is making salad.");
         double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);
         sleep(saladMakingTime);
         chefBook->SaladMakerTotalTimeWorking[saladMakerNumber] += saladMakingTime;
@@ -181,6 +201,7 @@ int main(int argc, char *argv[])
         chefBook->isSaladMakerDoingWork[saladMakerNumber] = false;
 
         printf("SALAD MAKER %d DONE MAKING SALAD!!\n", saladMakerNumber);
+        logString("Salad Maker " + to_string(saladMakerNumber) + " finished making salad.");
 
         if (sem_post(mutex) < 0)
         {
