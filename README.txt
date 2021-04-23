@@ -1,0 +1,1 @@
+In this assignment, you will write independent programs that run concurrently, get synchronized at various points, and their collaborative work empowers the operation of the Expo’21 Salad (E21S) production for visitors to the site of the event.
