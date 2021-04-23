@@ -68,9 +68,10 @@ int main(int argc, char *argv[])
     sem_t *GreenPepper_Onions_semaphore_done;
 
     int opt;
-    bool flagN = false; //number of salads flag
-    bool flagM = false; //chhef time flag
-    bool flagS = false; //salad maker time if running through chef fork
+    bool flagN = false;          //number of salads flag
+    bool flagM = false;          //chhef time flag
+    bool flagS = false;          //salad maker time if running through chef fork
+    bool flagStandalone = false; //means the chef will not fork the salad makers, you will have to run those programes yourself
 
     char *n_opt = 0;
     char *m_opt = 0;
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
     starter.close();
 
     //get the arguments for the chef program
-    while ((opt = getopt(argc, argv, "n:m:s:")) != -1)
+    while ((opt = getopt(argc, argv, "n:m:s:standalone:")) != -1)
     { // for each option... n and m
         switch (opt)
         {
@@ -103,6 +104,9 @@ int main(int argc, char *argv[])
         case 's':
             s_opt = optarg;
             flagS = true;
+            break;
+        case 'standalone':
+            flagStandalone = true;
             break;
         case '?': // unknown option...
             printf("Unknown Option %s", opt);
@@ -235,31 +239,34 @@ int main(int argc, char *argv[])
         }
     }
 
-    // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
-    pid_t pids[3];
-
-    for (int i = 0; i < 3; i++)
+    if (!flagStandalone)
     {
-        pids[i] = fork();
-        if (pids[i] == 0)
+        // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
+        pid_t pids[3];
+
+        for (int i = 0; i < 3; i++)
         {
-            char saladMakerNumberChar[2];
-            sprintf(saladMakerNumberChar, "%d", i);
-            char shmidChar[15];
-            char saladMakerTime[15];
-            sprintf(shmidChar, "%d", shmid);
-            if (flagS)
+            pids[i] = fork();
+            if (pids[i] == 0)
             {
-                sprintf(saladMakerTime, "%f", atof(s_opt));
-            }
-            else
-            {
-                sprintf(saladMakerTime, "%f", 2.0);
-            }
-            char *sorterData[8] = {"./saladMaker", "-m", saladMakerTime, "-s", shmidChar, "-n", saladMakerNumberChar, (char *)NULL};
-            if (execv(sorterData[0], sorterData) == -1)
-            {
-                perror("Error creating salad maker process");
+                char saladMakerNumberChar[2];
+                sprintf(saladMakerNumberChar, "%d", i);
+                char shmidChar[15];
+                char saladMakerTime[15];
+                sprintf(shmidChar, "%d", shmid);
+                if (flagS)
+                {
+                    sprintf(saladMakerTime, "%f", atof(s_opt));
+                }
+                else
+                {
+                    sprintf(saladMakerTime, "%f", 2.0);
+                }
+                char *sorterData[8] = {"./saladMaker", "-m", saladMakerTime, "-s", shmidChar, "-n", saladMakerNumberChar, (char *)NULL};
+                if (execv(sorterData[0], sorterData) == -1)
+                {
+                    perror("Error creating salad maker process");
+                }
             }
         }
     }
@@ -414,9 +421,12 @@ int main(int argc, char *argv[])
     while (chefBook->isSaladMakerDoingWork[0] || chefBook->isSaladMakerDoingWork[1] || chefBook->isSaladMakerDoingWork[2])
         ;
 
-    for (int i = 0; i < 3; i++)
+    if (!flagStandalone)
     {
-        kill(pids[i], SIGTERM); // kill each salad maker
+        for (int i = 0; i < 3; i++)
+        {
+            kill(pids[i], SIGTERM); // kill each salad maker
+        }
     }
 
     kill(timeLoggerPid, SIGTERM);
