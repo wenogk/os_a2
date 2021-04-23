@@ -230,3 +230,13 @@ string vegetablePairEnumToSemaphoreName_Done(VegetablePair type)
         return "Invalid vegetable pair";
     }
 }
+
+int randNum(int min, int max)
+{ //random number generaor function from https://stackoverflow.com/questions/29381843/generate-random-number-in-range-min-max/29382078
+    return rand() % (max - min + 1) + min;
+}
+
+double randDouble(int min, int max)
+{
+    return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
+}

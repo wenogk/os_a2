@@ -21,19 +21,10 @@
 #include <time.h>
 #include <fstream>
 
+//default weights of the veggies
 double tomatoWeight = 80.0;
 double greenPepperWeight = 50.0;
 double onionsWeight = 30.0;
-
-int randNum(int min, int max)
-{
-    return rand() % (max - min + 1) + min;
-}
-
-double randDouble(int min, int max)
-{
-    return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
-}
 
 void logString(string logString)
 {

@@ -18,22 +18,13 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 
+//default weights of the veggies
 double tomatoWeight = 80.0;
 double greenPepperWeight = 50.0;
 double onionsWeight = 30.0;
 
-int randNum(int min, int max)
-{
-    return rand() % (max - min + 1) + min;
-}
-
-double randDouble(int min, int max)
-{
-    return (max - min) * ((double)rand() / (double)RAND_MAX) + min;
-}
-
 void logString(string logString)
-{
+{ //function that logs string into the log file with the current date and time.
     ofstream logFile;
     logFile.open("logFile.txt", ios::app);
     time_t currentTime = time(NULL);
@@ -52,16 +43,20 @@ void logString(string logString)
 int main(int argc, char *argv[])
 {
     srand(time(0));
+
+    //semaphores for salad maker 2
     sem_t *Tomato_GreenPepper_semaphore_empty;
     sem_t *Tomato_GreenPepper_semaphore_full;
     sem_t *Tomato_GreenPepper_semaphore_mutex;
     sem_t *Tomato_GreenPepper_semaphore_done;
 
+    //semaphores for salad maker 1
     sem_t *Tomato_Onions_semaphore_empty;
     sem_t *Tomato_Onions_semaphore_full;
     sem_t *Tomato_Onions_semaphore_mutex;
     sem_t *Tomato_Onions_semaphore_done;
 
+    //semaphores for salad maker 0
     sem_t *GreenPepper_Onions_semaphore_empty;
     sem_t *GreenPepper_Onions_semaphore_full;
     sem_t *GreenPepper_Onions_semaphore_mutex;
@@ -73,10 +68,12 @@ int main(int argc, char *argv[])
     bool flagS = false;          //salad maker time if running through chef fork
     bool flagStandalone = false; //means the chef will not fork the salad makers, you will have to run those programes yourself
 
+    //variables to store the option values
     char *n_opt = 0;
     char *m_opt = 0;
     char *s_opt = 0;
 
+    //opening the log file and logging first line and removing previous content if there was any.
     ofstream starter("logFile.txt", ios::out);
     if (!starter)
     {
@@ -90,7 +87,7 @@ int main(int argc, char *argv[])
 
     //get the arguments for the chef program
     while ((opt = getopt(argc, argv, "n:m:s:standalone:")) != -1)
-    { // for each option... n and m
+    { // for each option...
         switch (opt)
         {
         case 'n':
@@ -121,8 +118,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int shmid, numtimes;
-    struct ChefBook *chefBook;
+    int shmid, numtimes;       // variables for shared memory
+    struct ChefBook *chefBook; //data structure we are sharing
     char *bufptr;
     int spaceavailable;
     double cheftime = atof(m_opt);
@@ -136,7 +133,7 @@ int main(int argc, char *argv[])
 
     chefBook = (ChefBook *)shmat(shmid, NULL, 0); // Attach to the shared memory segment to get a pointer to it.
 
-    if (chefBook == (void *)-1)
+    if (chefBook == (void *)-1) //if attaching failed, exit and print error
     {
         perror("Shared memory attach");
         return 1;
@@ -146,9 +143,11 @@ int main(int argc, char *argv[])
         printf("shmid %d\n", shmid);
     }
 
-    chefBook->SaladMakerTotalTimeWaiting[0] = 0.0;
-    chefBook->SaladMakerTotalTimeWaiting[1] = 0.0;
-    chefBook->SaladMakerTotalTimeWaiting[2] = 0.0;
+    chefBook->SaladMakerTotalTimeWaiting[0] = 0.0; // Initialize total time waiting for salad maker 0 to 0
+    chefBook->SaladMakerTotalTimeWaiting[1] = 0.0; // Initialize total time waiting for salad maker 1 to 0
+    chefBook->SaladMakerTotalTimeWaiting[2] = 0.0; // Initialize total time waiting for salad maker 2 to 0
+
+    //Next, we open all the semaphores necessary (4 for each salad maker)
 
     if ((Tomato_GreenPepper_semaphore_empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str(), O_CREAT, 0666, 1)) == SEM_FAILED)
     {
@@ -227,19 +226,19 @@ int main(int argc, char *argv[])
     }
 
     pid_t timeLoggerPid;
-    timeLoggerPid = fork();
+    timeLoggerPid = fork(); // We are forking for the time logger process that will log the times that two or more salad makers are working at the same time
     if (timeLoggerPid == 0)
     {
         char shmidChar[15];
         sprintf(shmidChar, "%d", shmid);
-        char *sorterData[4] = {"./timeLogger", "-s", shmidChar, (char *)NULL};
+        char *sorterData[4] = {"./timeLogger", "-s", shmidChar, (char *)NULL}; // passing the shared memory segment id to the time logger process
         if (execv(sorterData[0], sorterData) == -1)
         {
             perror("Error creating salad maker process");
         }
     }
 
-    if (!flagStandalone)
+    if (!flagStandalone) //if the -standalone option is used, we will not fork the salad makers and the user will have to call the ./saladMaker programs themselves
     {
         // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
         pid_t pids[3];
@@ -271,19 +270,14 @@ int main(int argc, char *argv[])
         }
     }
 
-    // while (the total number of salads needed - salads served) is > 0
-    //----randomly select 1 pair of veggies
-    //----randomly set weights for the two veggie variables
-
     int totalSaladsNeeded = atoi(n_opt);
     int totalVeggiePairsGivenToSaladMakers = 0;
 
     while (totalVeggiePairsGivenToSaladMakers < totalSaladsNeeded)
     {
         int chosenSaladMakerIndex = randNum(0, 2);
-        printf("Randomly chose %d\n", chosenSaladMakerIndex);
         logString("Chef randomly picked up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
-        ////sleep(3);
+
         if (chosenSaladMakerIndex == 0)
         {
             if (sem_wait(GreenPepper_Onions_semaphore_empty) < 0)
@@ -298,7 +292,6 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            ////sleep(2);
             chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
             chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
 
@@ -316,7 +309,6 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("CHEF waiting for Salad maker now.. \n");
             logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
 
             if (sem_wait(GreenPepper_Onions_semaphore_done) < 0)
@@ -339,8 +331,6 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("Giving ingredients to salad maker! \n");
-
             chefBook->currentPickedOnionWeight = randDouble(0.8 * onionsWeight, 1.2 * onionsWeight);
             chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
@@ -358,7 +348,6 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("CHEF waiting for Salad maker now.. \n");
             logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
 
             if (sem_wait(Tomato_Onions_semaphore_done) < 0)
@@ -381,8 +370,6 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("Giving ingredients to salad maker! \n");
-
             chefBook->currentPickedGreenPepperWeight = randDouble(0.8 * greenPepperWeight, 1.2 * greenPepperWeight);
             chefBook->currentPickedTomatoWeight = randDouble(0.8 * tomatoWeight, 1.2 * tomatoWeight);
 
@@ -400,9 +387,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            printf("CHEF waiting for Salad maker to pick up veggies now.. \n");
             logString("Chef waiting for Salad maker " + to_string(chosenSaladMakerIndex) + " to pick up " + vegetablePairEnumToNormalString(saladMakerNumberToVegetablePairNeeded(chosenSaladMakerIndex)));
-            //sleep(3);
 
             if (sem_wait(Tomato_GreenPepper_semaphore_done) < 0)
             {
@@ -429,10 +414,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    kill(timeLoggerPid, SIGTERM);
+    kill(timeLoggerPid, SIGTERM); //kill the timeLogger process
 
-    logChefBook(chefBook);
+    logChefBook(chefBook); //log all the relevant data to the user
 
+    //next, log the time ranges where two or more salad makers were working at the same time
     printf("----------------\n");
     std::ifstream file("intersectingTimeLogger.txt");
     std::string str;
@@ -441,6 +427,8 @@ int main(int argc, char *argv[])
         std::cout << str << endl;
     }
     printf("----------------\n");
+
+    //unlink AND close all semaphores
 
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(Tomato_GreenPepper).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(Tomato_GreenPepper).c_str());
