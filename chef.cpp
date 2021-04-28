@@ -237,11 +237,10 @@ int main(int argc, char *argv[])
             perror("Error creating salad maker process");
         }
     }
-
+    pid_t pids[3];
     if (!flagStandalone) //if the -standalone option is used, we will not fork the salad makers and the user will have to call the ./saladMaker programs themselves
     {
         // 3 SaladMakers, therefore create 3 salad maker processes and send shared memory shmid and salad maker index
-        pid_t pids[3];
 
         for (int i = 0; i < 3; i++)
         {
