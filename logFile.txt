@@ -1,0 +1,51 @@
+LOGS OF SALAD MAKING OF ROMENO'S KITCHEN
+---------------
+
+Thu Apr 29 02:00:32 2021 > Chef randomly picked up Tomato and Green Pepper
+--------------
+Thu Apr 29 02:00:32 2021 > Chef placed 82.484917g Tomato and 49.389633g Green Pepper on Salad Maker 2's workspace.
+--------------
+Thu Apr 29 02:00:32 2021 > Chef waiting for Salad maker 2 to pick up Tomato and Green Pepper
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 0 waiting for Green Pepper and Onions
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 2 waiting for Tomato and Green Pepper
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 1 waiting for Tomato and Onions
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 2 picked up 82.484917g Tomato and 49.389633g Green Pepper
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 2 is making salad.
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 2 finished making salad.
+--------------
+Thu Apr 29 02:00:32 2021 > Salad Maker 2 waiting for Tomato and Green Pepper
+--------------
+Thu Apr 29 02:00:35 2021 > Chef randomly picked up Tomato and Onions
+--------------
+Thu Apr 29 02:00:35 2021 > Chef placed 77.833435g Tomato and 24.687166g Onions on Salad Maker 1's workspace.
+--------------
+Thu Apr 29 02:00:35 2021 > Chef waiting for Salad maker 1 to pick up Tomato and Onions
+--------------
+Thu Apr 29 02:00:35 2021 > Salad Maker 1 picked up 77.833435g Tomato and 24.687166g Onions
+--------------
+Thu Apr 29 02:00:35 2021 > Salad Maker 1 is making salad.
+--------------
+Thu Apr 29 02:00:35 2021 > Salad Maker 1 finished making salad.
+--------------
+Thu Apr 29 02:00:35 2021 > Salad Maker 1 waiting for Tomato and Onions
+--------------
+Thu Apr 29 02:00:38 2021 > Chef randomly picked up Tomato and Onions
+--------------
+Thu Apr 29 02:00:38 2021 > Chef placed 72.726410g Tomato and 32.167507g Onions on Salad Maker 1's workspace.
+--------------
+Thu Apr 29 02:00:38 2021 > Chef waiting for Salad maker 1 to pick up Tomato and Onions
+--------------
+Thu Apr 29 02:00:38 2021 > Salad Maker 1 picked up 72.726410g Tomato and 32.167507g Onions
+--------------
+Thu Apr 29 02:00:38 2021 > Salad Maker 1 is making salad.
+--------------
+Thu Apr 29 02:00:38 2021 > Salad Maker 1 finished making salad.
+--------------
+Thu Apr 29 02:00:38 2021 > Salad Maker 1 waiting for Tomato and Onions
+--------------

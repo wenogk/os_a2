@@ -86,8 +86,9 @@ int main(int argc, char *argv[])
     starter.close();
 
     //get the arguments for the chef program
-    while ((opt = getopt(argc, argv, "n:m:s:standalone:")) != -1)
+    while ((opt = getopt(argc, argv, "n:m:s:st")) != -1)
     { // for each option...
+
         switch (opt)
         {
         case 'n':
@@ -102,8 +103,9 @@ int main(int argc, char *argv[])
             s_opt = optarg;
             flagS = true;
             break;
-        case 'standalone':
+        case 'st':
             flagStandalone = true;
+            printf("standalone arg!!!\n");
             break;
         case '?': // unknown option...
             printf("Unknown Option %s", opt);
@@ -111,10 +113,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (!flagN || !flagM)
+    if ((!flagN || !flagM || (!flagS && !flagStandalone)))
     {
         //if -n and -m flag values not given, exit and show error msg:
-        printf("Argument error. Chef should be invoked as follows: ./chef -n numOfSalads -m cheftime \n");
+        printf("Argument error. Chef should be invoked in one of the 2 ways: \n\t1) ./chef -n numOfSalads -m cheftime -s saladMakersTime\n\t2) ./chef -n numOfSalads -m cheftime -standalone\n");
         return 1;
     }
 
@@ -267,6 +269,10 @@ int main(int argc, char *argv[])
                 }
             }
         }
+    }
+    else
+    {
+        printf("Chef in standalone mode \n");
     }
 
     int totalSaladsNeeded = atoi(n_opt);
