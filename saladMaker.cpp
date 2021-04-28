@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         time_t startWaiting = time(0); //time(0);
-        printf("Waiting for ingredients %s clock is %f \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str(), float(startWaiting));
+        //printf("Waiting for ingredients %s clock is %f \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str(), float(startWaiting));
 
         logString("Salad Maker " + to_string(saladMakerNumber) + " waiting for " + vegetablePairEnumToNormalString(me->vegetablesNeeded).c_str());
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
             perror("mutex probblem");
             return 1;
         }
-        printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
+        //printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
         logString("Salad Maker " + to_string(saladMakerNumber) + " picked up " + vegetablePairEnumToNormalStringWithWeights(me->vegetablesNeeded, chefBook).c_str());
         time_t endWaiting = time(0);
         double secondsSinceStartedToWait = difftime(endWaiting, startWaiting); //difftime(time(0), startWaiting);
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
             chefBook->totalPickedTomatoWeightForSaladMaker2 += chefBook->currentPickedTomatoWeight;
         }
 
-        printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
+        //printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
         logString("Salad Maker " + to_string(saladMakerNumber) + " is making salad.");
         double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);
         sleep(saladMakingTime);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
         chefBook->isSaladMakerDoingWork[saladMakerNumber] = false;
 
-        printf("SALAD MAKER %d DONE MAKING SALAD!!\n", saladMakerNumber);
+        //printf("SALAD MAKER %d DONE MAKING SALAD!!\n", saladMakerNumber);
         logString("Salad Maker " + to_string(saladMakerNumber) + " finished making salad.");
 
         if (sem_post(mutex) < 0)

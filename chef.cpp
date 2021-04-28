@@ -398,7 +398,7 @@ int main(int argc, char *argv[])
         double sleepyTime = randDouble(cheftime * 0.5, cheftime);
         sleep(sleepyTime);
 
-        printf("Serving salad.. \n");
+        printf("Serving salad %d.. \n", totalVeggiePairsGivenToSaladMakers);
         totalVeggiePairsGivenToSaladMakers += 1;
     }
 
@@ -414,6 +414,8 @@ int main(int argc, char *argv[])
     }
 
     kill(timeLoggerPid, SIGTERM); //kill the timeLogger process
+
+    printf("----------------\n");
 
     logChefBook(chefBook); //log all the relevant data to the user
 
