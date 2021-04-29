@@ -84,13 +84,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    SaladMaker *me;
+    SaladMaker *me; //pointer to current salad maker
     int saladMakerNumber = atoi(n_opt);
     int shmid = atoi(s_opt);
     double salmkrtime = atof(m_opt);
     me = getSaladMakerFromSaladMakerNumber(saladMakerNumber);
 
-    struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment */
+    struct ChefBook *chefBook = (ChefBook *)shmat(shmid, NULL, 0); /* Attach the segment to the shared memory from chef */
 
     if (chefBook == (void *)-1)
     {
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("SaladMaker %d shmid %d\n", saladMakerNumber, shmid);
+        printf("SaladMaker %d attached to shmid %d\n", saladMakerNumber, shmid);
     }
 
     if ((empty = sem_open(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str(), O_CREAT, 0666, 0)) == SEM_FAILED)
@@ -126,11 +126,9 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("Salad maker before\n");
     while (1)
     {
-        time_t startWaiting = time(0); //time(0);
-        //printf("Waiting for ingredients %s clock is %f \n", vegetablePairEnumToSemaphoreName_Done(me->vegetablesNeeded).c_str(), float(startWaiting));
+        time_t startWaiting = time(0); //start time for waiting for veggies from the chef
 
         logString("Salad Maker " + to_string(saladMakerNumber) + " waiting for " + vegetablePairEnumToNormalString(me->vegetablesNeeded).c_str());
 
@@ -153,11 +151,13 @@ int main(int argc, char *argv[])
             perror("mutex probblem");
             return 1;
         }
-        //printf("SALAD MAKER %d PICKED UP VEGGIES!!\n", saladMakerNumber);
+
+        //pick up the vegetables
+
         logString("Salad Maker " + to_string(saladMakerNumber) + " picked up " + vegetablePairEnumToNormalStringWithWeights(me->vegetablesNeeded, chefBook).c_str());
-        time_t endWaiting = time(0);
-        double secondsSinceStartedToWait = difftime(endWaiting, startWaiting); //difftime(time(0), startWaiting);
-        chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait;
+        time_t endWaiting = time(0);                                                         //end waiting time of salad maker as it is about to pick up veggies
+        double secondsSinceStartedToWait = difftime(endWaiting, startWaiting);               //difftime(time(0), startWaiting);
+        chefBook->SaladMakerTotalTimeWaiting[saladMakerNumber] += secondsSinceStartedToWait; //add waiting time to totoal time waited for specific salad maker
 
         if (saladMakerNumber == 0)
         {
@@ -181,17 +181,19 @@ int main(int argc, char *argv[])
             chefBook->totalPickedTomatoWeightForSaladMaker2 += chefBook->currentPickedTomatoWeight;
         }
 
-        //printf("SALAD MAKER %d MAKING SALAD!!\n", saladMakerNumber);
+        // Make the salad
+
         logString("Salad Maker " + to_string(saladMakerNumber) + " is making salad.");
         double saladMakingTime = randDouble(salmkrtime * 0.8, salmkrtime);
-        sleep(saladMakingTime);
-        chefBook->SaladMakerTotalTimeWorking[saladMakerNumber] += saladMakingTime;
+        sleep(saladMakingTime);                                                    //sleep for the specific time as if salad maker is making the salad
+        chefBook->SaladMakerTotalTimeWorking[saladMakerNumber] += saladMakingTime; //add the time taken to work to total time worked
 
         chefBook->NumberOfTotalSaladsMadeBySaladMaker[saladMakerNumber] += 1;
 
         chefBook->isSaladMakerDoingWork[saladMakerNumber] = false;
 
-        //printf("SALAD MAKER %d DONE MAKING SALAD!!\n", saladMakerNumber);
+        // Done making salad
+
         logString("Salad Maker " + to_string(saladMakerNumber) + " finished making salad.");
 
         if (sem_post(mutex) < 0)
@@ -207,6 +209,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //unlink and close all semaphores used
     sem_unlink(vegetablePairEnumToSemaphoreName_Empty(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Full(me->vegetablesNeeded).c_str());
     sem_unlink(vegetablePairEnumToSemaphoreName_Mutex(me->vegetablesNeeded).c_str());
@@ -225,6 +228,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    delete me;
+    delete me; //delete saladMaker
     return 0;
 }

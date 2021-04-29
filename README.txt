@@ -30,4 +30,11 @@ Running details
         - Total time each saladmaker spent on salads 
         - Total time every saladmaker waits for ingredients’ pairs to be delivered
         - Listings of time periods where 2 or more saladmakers were busy at the same time
-        
+
+Implementation details
+    - Four semaphores are used for each salad maker : mutex, full, empty and done
+        - The mutex, full and empty semaphores are used normally in the classic producer consumer bounded buffer solution from classic
+        - The additional "done" semaphore is to keep the chef waiting until the specific salad maker currently picking up vegetables picks it up before it goes to pick the next vegetable
+    - A shared struct called ChefBook from kitchen.h is used to store all the running data for each Salad Maker
+    - The Chef purges the shared memory segments and semaphores when it is done
+
