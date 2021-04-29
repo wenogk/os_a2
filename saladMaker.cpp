@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
             return 1;
         }
 
+        //mutex for the shared memory
         if (sem_wait(mutex) < 0)
         {
             perror("mutex probblem");
@@ -146,6 +147,7 @@ int main(int argc, char *argv[])
 
         chefBook->isSaladMakerDoingWork[saladMakerNumber] = true;
 
+        //this post would allow the chef to randomly pick the next two veggies
         if (sem_post(done) < 0)
         {
             perror("mutex probblem");
