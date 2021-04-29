@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 
+// condition to check if two or more salad makers are doing work
 bool twoOrMoreSaladMakersDoingWork(ChefBook *chefBook)
 {
     return ((chefBook->isSaladMakerDoingWork[0] && chefBook->isSaladMakerDoingWork[1]) || (chefBook->isSaladMakerDoingWork[0] && chefBook->isSaladMakerDoingWork[2]) || (chefBook->isSaladMakerDoingWork[1] && chefBook->isSaladMakerDoingWork[2]));
@@ -83,22 +84,21 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        if (twoOrMoreSaladMakersDoingWork(chefBook))
+        if (twoOrMoreSaladMakersDoingWork(chefBook)) //check if two or more salad makers are doig work
         {
-
-            time_t startTime = time(NULL);
+            time_t startTime = time(NULL); // get start time
             // ctime() used to give the present time
             while (twoOrMoreSaladMakersDoingWork(chefBook))
-                ;
-            time_t endTime = time(NULL);
+                ;                        //wait while two or more salad makers doing work
+            time_t endTime = time(NULL); // get end time
             char *startTime_no_newline;
             char *endTime_no_newline;
 
-            startTime_no_newline = strdup(ctime(&startTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
-            startTime_no_newline[strlen(startTime_no_newline) - 1] = '\0';
+            startTime_no_newline = strdup(ctime(&startTime));              //get the string time
+            startTime_no_newline[strlen(startTime_no_newline) - 1] = '\0'; //removing the extra end lie that the ctime function returns
 
-            endTime_no_newline = strdup(ctime(&endTime)); //myctime[ strlen(myctime) - 1 ] = '\0';
-            endTime_no_newline[strlen(endTime_no_newline) - 1] = '\0';
+            endTime_no_newline = strdup(ctime(&endTime));              //get the string time
+            endTime_no_newline[strlen(endTime_no_newline) - 1] = '\0'; //removing the extra end lie that the ctime function returns
 
             std::string stringToAppend;             // an empty string
             stringToAppend += startTime_no_newline; // append the first character

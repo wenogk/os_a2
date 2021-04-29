@@ -1,9 +1,0 @@
-LOGS OF SALAD MAKING OF ROMENO'S KITCHEN
----------------
-
-Thu Apr 29 18:58:01 2021 > Chef randomly picked up Green Pepper and Onions
---------------
-Thu Apr 29 18:58:01 2021 > Chef placed 54.398201g Green Pepper and 30.323622g Onions on Salad Maker 0's workspace.
---------------
-Thu Apr 29 18:58:01 2021 > Chef waiting for Salad maker 0 to pick up Green Pepper and Onions
---------------
