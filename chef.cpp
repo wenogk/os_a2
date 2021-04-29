@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     starter.close();
 
     //get the arguments for the chef program
-    while ((opt = getopt(argc, argv, "n:m:s:st")) != -1)
+    while ((opt = getopt(argc, argv, "n:m:s:x")) != -1)
     { // for each option...
 
         switch (opt)
@@ -103,9 +103,8 @@ int main(int argc, char *argv[])
             s_opt = optarg;
             flagS = true;
             break;
-        case 'st':
+        case 'x':
             flagStandalone = true;
-            printf("standalone arg!!!\n");
             break;
         case '?': // unknown option...
             printf("Unknown Option %s", opt);
@@ -142,7 +141,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("shmid %d\n", shmid);
+        printf("shmid is %d\n", shmid);
     }
 
     chefBook->SaladMakerTotalTimeWaiting[0] = 0.0; // Initialize total time waiting for salad maker 0 to 0
