@@ -1,6 +1,8 @@
 #include <iostream>
 
 using namespace std;
+
+//Vegetable types
 enum Vegetable
 {
     Tomato,
@@ -8,6 +10,7 @@ enum Vegetable
     GreenPepper
 };
 
+//Vegetable pair types, basically what Salad makers may want from the Chef
 enum VegetablePair
 {
     Tomato_GreenPepper,
@@ -15,62 +18,78 @@ enum VegetablePair
     GreenPepper_Onions
 };
 
+//Chefbook struct is going to be stored in the shared memory
 struct ChefBook
 {
 
+    // weights of veggies currently randomly picked by Chef
     float currentPickedTomatoWeight;
     float currentPickedGreenPepperWeight;
     float currentPickedOnionWeight;
 
+    //array for total number of salads made by each salad maker
     int NumberOfTotalSaladsMadeBySaladMaker[3];
 
+    //array for current start time for each salad maker
     double SaladMakerCurrentStartTime[3];
 
+    //array for current end time for each salad maker
     double SaladMakerCurrentEndTime[3];
 
+    //array for total time waited for each salad maker
     double SaladMakerTotalTimeWaiting[3];
 
+    //array for total time worked for each salad maker
     double SaladMakerTotalTimeWorking[3];
 
+    //array for boolean of whether work is being done for each salad maker
     bool isSaladMakerDoingWork[3];
 
+    //total weight picked for each veggie for salad maker 0
     float totalPickedGreenPepperWeightForSaladMaker0;
     float totalPickedOnionWeightForSaladMaker0;
     float totalSelfPickedTomatoWeightForSaladMaker0;
 
+    //total weight picked for each veggie for salad maker 1
     float totalPickedTomatoWeightForSaladMaker1;
     float totalPickedOnionWeightForSaladMaker1;
     float totalSelfPickedGreenPepperWeightForSaladMaker1;
 
+    //total weight picked for each veggie for salad maker 2
     float totalPickedTomatoWeightForSaladMaker2;
     float totalPickedGreenPepperWeightForSaladMaker2;
     float totalSelfPickedOnionWeightForSaladMaker2;
 };
 
+//Salad Maker struct
 struct SaladMaker
 {
     Vegetable vegetableInfiniteSupply;
     VegetablePair vegetablesNeeded;
 };
 
+//Salad Maker 1 with the veggies needed and which infinite supply it has
 struct SaladMaker1
 {
     Vegetable vegetableInfiniteSupply = Tomato;
     VegetablePair vegetablesNeeded = GreenPepper_Onions;
 };
 
+//Salad Maker 2 with the veggies needed and which infinite supply it has
 struct SaladMaker2
 {
     Vegetable vegetableInfiniteSupply = GreenPepper;
     VegetablePair vegetablesNeeded = Tomato_Onions;
 };
 
+//Salad Maker 3 with the veggies needed and which infinite supply it has
 struct SaladMaker3
 {
     Vegetable vegetableInfiniteSupply = Onions;
     VegetablePair vegetablesNeeded = Tomato_GreenPepper;
 };
 
+//function to get the salad maker from an int of 0,1 or 2
 SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
 {
     SaladMaker *me = new SaladMaker();
@@ -92,6 +111,7 @@ SaladMaker *getSaladMakerFromSaladMakerNumber(int saladMakerNumber)
     return me;
 }
 
+//log the chefbook struct variables
 void logChefBook(ChefBook *chefBook)
 {
     printf("\tSalad Maker 0 total salads made: %d \n", chefBook->NumberOfTotalSaladsMadeBySaladMaker[0]);
@@ -111,6 +131,7 @@ void logChefBook(ChefBook *chefBook)
     printf("\tSalad Maker 2 total time spent working on salads: %.2f seconds \n", chefBook->SaladMakerTotalTimeWorking[2]);
 }
 
+//get the vegetable pair needed using the salad maker index
 VegetablePair saladMakerNumberToVegetablePairNeeded(int index)
 {
     switch (index)
@@ -126,6 +147,7 @@ VegetablePair saladMakerNumberToVegetablePairNeeded(int index)
     }
 }
 
+//get string to print / log of vegetable pair and their weights
 string vegetablePairEnumToNormalStringWithWeights(VegetablePair type, ChefBook *chefBook)
 {
     switch (type)
@@ -141,6 +163,7 @@ string vegetablePairEnumToNormalStringWithWeights(VegetablePair type, ChefBook *
     }
 }
 
+//vegetable pair struct to string type
 string vegetablePairEnumToNormalString(VegetablePair type)
 {
     switch (type)
@@ -156,6 +179,7 @@ string vegetablePairEnumToNormalString(VegetablePair type)
     }
 }
 
+//vegetable pair to semaphore prefix name
 string vegetablePairEnumToSemaphoreName(VegetablePair type)
 {
     switch (type)
@@ -171,6 +195,7 @@ string vegetablePairEnumToSemaphoreName(VegetablePair type)
     }
 }
 
+//vegetable pair to semaphore prefix name empty semaphore
 string vegetablePairEnumToSemaphoreName_Empty(VegetablePair type)
 {
     switch (type)
@@ -186,6 +211,7 @@ string vegetablePairEnumToSemaphoreName_Empty(VegetablePair type)
     }
 }
 
+//vegetable pair to semaphore prefix name empty full
 string vegetablePairEnumToSemaphoreName_Full(VegetablePair type)
 {
     switch (type)
@@ -201,6 +227,7 @@ string vegetablePairEnumToSemaphoreName_Full(VegetablePair type)
     }
 }
 
+//vegetable pair to semaphore prefix name empty mutex
 string vegetablePairEnumToSemaphoreName_Mutex(VegetablePair type)
 {
     switch (type)
@@ -216,6 +243,7 @@ string vegetablePairEnumToSemaphoreName_Mutex(VegetablePair type)
     }
 }
 
+//vegetable pair to semaphore prefix name empty done
 string vegetablePairEnumToSemaphoreName_Done(VegetablePair type)
 {
     switch (type)
