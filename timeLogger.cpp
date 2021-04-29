@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("timeLogger %d shmid\n", shmid);
+        //printf("timeLogger joined %d shmid\n", shmid);
     }
 
     while (1)
