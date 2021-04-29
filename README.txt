@@ -3,8 +3,8 @@ In this assignment, I wrote independent programs that run concurrently, get sync
 There are 2 ways to run the code: 
     1) By calling the chef which will fork all the salad makers (recommended method)
         - The command is ./chef -n numOfSalads -m cheftime -s eachSaladMakerTime
-    2) By calling the chef in "standalone" mode so you would have to manually call the salad makers
-        - The command for the chef is ./chef -n numOfSalads -m cheftime
+    2) By calling the chef in "standalone" mode so you would have to manually call the salad makers (the -x arg makes the chef standalone and not fork salad makers)
+        - The command for the chef is ./chef -n numOfSalads -m cheftime -x
         - The command for each salad maker is ./saladmaker -m salmkrtime -s shmid -n saladMakerNumber
             - the -n arg will be 0, 1 and 2 for salad maker 0, 1 and 2 respectively
             - the shmid printed out from the chef should be used in the salad maker command

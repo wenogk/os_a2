@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     if ((!flagN || !flagM || (!flagS && !flagStandalone)))
     {
         //if -n and -m flag values not given, exit and show error msg:
-        printf("Argument error. Chef should be invoked in one of the 2 ways: \n\t1) ./chef -n numOfSalads -m cheftime -s saladMakersTime\n\t2) ./chef -n numOfSalads -m cheftime -standalone\n");
+        printf("Argument error. Chef should be invoked in one of the 2 ways: \n\t1) ./chef -n numOfSalads -m cheftime -s saladMakersTime\n\t2) ./chef -n numOfSalads -m cheftime -x\n");
         return 1;
     }
 
